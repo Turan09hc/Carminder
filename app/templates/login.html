@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Login - CarMinder{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6 col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0">
+                        <i class="fas fa-sign-in-alt"></i> Login to CarMinder
+                    </h2>
+                    <p class="mb-0 mt-2">Access your vehicle dashboard</p>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="mb-4">
+                            <label for="plate_number" class="form-label fw-bold">
+                                <i class="fas fa-id-card text-primary"></i> Car Plate Number
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="plate_number" 
+                                   name="plate_number" placeholder="Enter your plate number" 
+                                   style="text-transform: uppercase;" required>
+                            <div class="invalid-feedback">
+                                Please provide your plate number.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="owner" class="form-label fw-bold">
+                                <i class="fas fa-user text-primary"></i> Owner Name
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="owner" 
+                                   name="owner" placeholder="Enter owner name" required>
+                            <div class="invalid-feedback">
+                                Please provide the owner name.
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center">
+                        <p class="text-muted">Don't have an account?</p>
+                        <a href="{{ url_for('main.register') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus"></i> Register Your Car
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            <i class="fas fa-info-circle text-info"></i> How to Login
+                        </h6>
+                        <p class="card-text small text-muted mb-0">
+                            Use your car's plate number and the owner name you registered with.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Bootstrap form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+</script>
+{% endblock %}

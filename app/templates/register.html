@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Register Your Car - CarMinder{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white text-center py-4">
+                    <h2 class="mb-0">
+                        <i class="fas fa-car-alt"></i> Register Your Vehicle
+                    </h2>
+                    <p class="mb-0 mt-2">Enter your car's information to start tracking maintenance</p>
+                </div>
+                <div class="card-body p-5">
+                    <form method="POST" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="plate_number" class="form-label fw-bold">
+                                    <i class="fas fa-id-card text-primary"></i> Car Plate Number *
+                                </label>
+                                <input type="text" class="form-control" id="plate_number" name="plate_number" 
+                                       placeholder="e.g., 10-AA-123" required style="text-transform: uppercase;">
+                                <div class="invalid-feedback">
+                                    Please provide a valid plate number.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="car_model" class="form-label fw-bold">
+                                    <i class="fas fa-car text-primary"></i> Car Model *
+                                </label>
+                                <select class="form-select" id="car_model" name="car_model" required>
+                                    <option value="">Choose your car model...</option>
+                                    <optgroup label="Toyota">
+                                        <option value="Toyota Camry">Toyota Camry</option>
+                                        <option value="Toyota Corolla">Toyota Corolla</option>
+                                        <option value="Toyota RAV4">Toyota RAV4</option>
+                                        <option value="Toyota Prius">Toyota Prius</option>
+                                        <option value="Toyota Land Cruiser">Toyota Land Cruiser</option>
+                                    </optgroup>
+                                    <optgroup label="Honda">
+                                        <option value="Honda Civic">Honda Civic</option>
+                                        <option value="Honda Accord">Honda Accord</option>
+                                        <option value="Honda CR-V">Honda CR-V</option>
+                                        <option value="Honda Pilot">Honda Pilot</option>
+                                    </optgroup>
+                                    <optgroup label="BMW">
+                                        <option value="BMW 3 Series">BMW 3 Series</option>
+                                        <option value="BMW 5 Series">BMW 5 Series</option>
+                                        <option value="BMW X3">BMW X3</option>
+                                        <option value="BMW X5">BMW X5</option>
+                                    </optgroup>
+                                    <optgroup label="Mercedes-Benz">
+                                        <option value="Mercedes C-Class">Mercedes C-Class</option>
+                                        <option value="Mercedes E-Class">Mercedes E-Class</option>
+                                        <option value="Mercedes GLC">Mercedes GLC</option>
+                                        <option value="Mercedes GLE">Mercedes GLE</option>
+                                    </optgroup>
+                                    <optgroup label="Audi">
+                                        <option value="Audi A4">Audi A4</option>
+                                        <option value="Audi A6">Audi A6</option>
+                                        <option value="Audi Q5">Audi Q5</option>
+                                        <option value="Audi Q7">Audi Q7</option>
+                                    </optgroup>
+                                    <optgroup label="Hyundai">
+                                        <option value="Hyundai Elantra">Hyundai Elantra</option>
+                                        <option value="Hyundai Sonata">Hyundai Sonata</option>
+                                        <option value="Hyundai Tucson">Hyundai Tucson</option>
+                                        <option value="Hyundai Santa Fe">Hyundai Santa Fe</option>
+                                    </optgroup>
+                                    <optgroup label="Other">
+                                        <option value="Other">Other (Specify in owner field)</option>
+                                    </optgroup>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select your car model.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="owner" class="form-label fw-bold">
+                                    <i class="fas fa-user text-primary"></i> Owner Name *
+                                </label>
+                                <input type="text" class="form-control" id="owner" name="owner" 
+                                       placeholder="Full name of the car owner" required>
+                                <div class="invalid-feedback">
+                                    Please provide the owner's name.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="tel_no" class="form-label fw-bold">
+                                    <i class="fas fa-phone text-primary"></i> Phone Number *
+                                </label>
+                                <input type="tel" class="form-control" id="tel_no" name="tel_no" 
+                                       placeholder="+994XXXXXXXXX" required>
+                                <div class="invalid-feedback">
+                                    Please provide a valid phone number.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="mileage" class="form-label fw-bold">
+                                    <i class="fas fa-tachometer-alt text-primary"></i> Current Mileage (km) *
+                                </label>
+                                <input type="number" class="form-control" id="mileage" name="mileage" 
+                                       placeholder="e.g., 45000" min="0" required>
+                                <div class="invalid-feedback">
+                                    Please provide the current mileage.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="production_date" class="form-label fw-bold">
+                                    <i class="fas fa-calendar text-primary"></i> Production Date *
+                                </label>
+                                <input type="date" class="form-control" id="production_date" name="production_date" required>
+                                <div class="invalid-feedback">
+                                    Please provide the production date.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="gas_type" class="form-label fw-bold">
+                                    <i class="fas fa-gas-pump text-primary"></i> Gas Type *
+                                </label>
+                                <select class="form-select" id="gas_type" name="gas_type" required>
+                                    <option value="">Choose gas type...</option>
+                                    <option value="92">92 Octane</option>
+                                    <option value="95">95 Octane</option>
+                                    <option value="98">98 Octane (Premium)</option>
+                                    <option value="diesel">Diesel</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select the gas type.
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6 mb-4">
+                                <label for="oil_type" class="form-label fw-bold">
+                                    <i class="fas fa-oil-can text-primary"></i> Oil Type *
+                                </label>
+                                <select class="form-select" id="oil_type" name="oil_type" required>
+                                    <option value="">Choose oil type...</option>
+                                    <option value="cheap">Economy Oil (Cheap)</option>
+                                    <option value="standard">Standard Oil</option>
+                                    <option value="premium">Premium Synthetic Oil</option>
+                                </select>
+                                <div class="invalid-feedback">
+                                    Please select the oil type.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-save"></i> Register Vehicle
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <p class="text-muted">Already have an account? 
+                            <a href="{{ url_for('main.login') }}" class="text-decoration-none fw-bold">Login Here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Bootstrap form validation
+(function() {
+    'use strict';
+    window.addEventListener('load', function() {
+        var forms = document.getElementsByClassName('needs-validation');
+        var validation = Array.prototype.filter.call(forms, function(form) {
+            form.addEventListener('submit', function(event) {
+                if (form.checkValidity() === false) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    }, false);
+})();
+
+// Set max date for production date (today)
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('production_date').setAttribute('max', today);
+});
+</script>
+{% endblock %}

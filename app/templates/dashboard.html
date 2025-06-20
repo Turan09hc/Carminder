@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CarMinder{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Welcome Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="status-card">
+                <div class="text-center">
+                    <h1 class="display-4 mb-3">
+                        <i class="fas fa-tachometer-alt"></i> Welcome, {{ car.owner }}!
+                    </h1>
+                    <p class="lead mb-0">{{ car.plate_number }} - {{ car.car_model }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Oil Status Alert -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-lg">
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="fas fa-oil-can"></i> Oil Change Status
+                    </h3>
+                    <div class="text-center">
+                        {% if "needed" in oil_status.lower() %}
+                            <div class="alert alert-danger d-inline-block p-4 fs-5">
+                                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i><br>
+                                <strong>{{ oil_status }}</strong>
+                            </div>
+                            <div class="mt-3">
+                                <form method="POST" action="{{ url_for('main.oil_change_done') }}" class="d-inline">
+                                    <button type="submit" class="btn btn-success btn-lg">
+                                        <i class="fas fa-check"></i> Mark Oil Change Complete
+                                    </button>
+                                </form>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success d-inline-block p-4 fs-5">
+                                <i class="fas fa-check-circle fa-2x mb-3"></i><br>
+                                <strong>{{ oil_status }}</strong>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Car Information Table -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle"></i> Vehicle Information
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped car-info-table mb-0">
+                        <tbody>
+                            <tr>
+                                <th width="30%"><i class="fas fa-id-card text-primary"></i> Plate Number</th>
+                                <td><span class="badge bg-primary fs-6">{{ car.plate_number }}</span></td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-car text-primary"></i> Car Model</th>
+                                <td>{{ car.car_model }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-user text-primary"></i> Owner</th>
+                                <td>{{ car.owner }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-phone text-primary"></i> Phone Number</th>
+                                <td>{{ car.tel_no }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-tachometer-alt text-primary"></i> Current Mileage</th>
+                                <td>
+                                    <strong>{{ "{:,}".format(car.mileage) }} km</strong>
+                                    <button class="btn btn-sm btn-outline-primary ms-2" data-bs-toggle="modal" data-bs-target="#updateMileageModal">
+                                        <i class="fas fa-edit"></i> Update
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-gas-pump text-primary"></i> Gas Type</th>
+                                <td>
+                                    {% if car.gas_type == '92' %}
+                                        <span class="badge bg-warning">92 Octane</span>
+                                    {% elif car.gas_type == '95' %}
+                                        <span class="badge bg-info">95 Octane</span>
+                                    {% elif car.gas_type == '98' %}
+                                        <span class="badge bg-success">98 Octane (Premium)</span>
+                                    {% else %}
+                                        <span class="badge bg-dark">{{ car.gas_type|title }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-oil-can text-primary"></i> Oil Type</th>
+                                <td>
+                                    {% if car.oil_type == 'cheap' %}
+                                        <span class="badge bg-secondary">Economy Oil</span>
+                                    {% elif car.oil_type == 'standard' %}
+                                        <span class="badge bg-primary">Standard Oil</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Premium Synthetic</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-calendar text-primary"></i> Production Date</th>
+                                <td>{{ car.production_date }}</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-wrench text-primary"></i> Last Oil Change</th>
+                                <td>{{ "{:,}".format(car.last_oil_change_km) }} km</td>
+                            </tr>
+                            <tr>
+                                <th><i class="fas fa-road text-primary"></i> Distance Since Oil Change</th>
+                                <td>
+                                    <strong>{{ "{:,}".format(car.mileage - car.last_oil_change_km) }} km</strong>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-plus-circle fa-3x text-primary mb-3"></i>
+                    <h5>Update Mileage</h5>
+                    <p class="text-muted">Keep your mileage current for accurate tracking</p>
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateMileageModal">
+                        <i class="fas fa-edit"></i> Update Now
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-oil-can fa-3x text-success mb-3"></i>
+                    <h5>Oil Change Done</h5>
+                    <p class="text-muted">Mark when you've completed an oil change</p>
+                    <form method="POST" action="{{ url_for('main.oil_change_done') }}" class="d-inline">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check"></i> Mark Complete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x text-info mb-3"></i>
+                    <h5>Maintenance History</h5>
+                    <p class="text-muted">View your car's maintenance records</p>
+                    <button class="btn btn-info" disabled>
+                        <i class="fas fa-history"></i> Coming Soon
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Mileage Modal -->
+<div class="modal fade" id="updateMileageModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-tachometer-alt"></i> Update Mileage
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="POST" action="{{ url_for('main.update_mileage') }}">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="new_mileage" class="form-label">Current Mileage (km)</label>
+                        <input type="number" class="form-control" id="new_mileage" name="new_mileage" 
+                               value="{{ car.mileage }}" min="{{ car.mileage }}" required>
+                        <div class="form-text">
+                            Current: {{ "{:,}".format(car.mileage) }} km
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Update Mileage
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
