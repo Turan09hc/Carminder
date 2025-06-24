@@ -1,3 +1,5 @@
+import pymysql
+pymysql.install_as_MySQLdb()
 from flask import Flask
 from flask import current_app
 from flask_mysqldb import MySQL  
