@@ -28,13 +28,12 @@
             font-size: 14px;
         }
 
-        /* Header Styles */
+        /* Header */
         .sap-header {
             background: linear-gradient(135deg, var(--sap-dark-blue) 0%, var(--sap-blue) 100%);
             color: white;
             padding: 12px 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            border-bottom: 3px solid var(--sap-blue);
         }
 
         .sap-header h1 {
@@ -45,27 +44,13 @@
             align-items: center;
         }
 
-        .sap-header .subtitle {
-            opacity: 0.9;
-            font-size: 12px;
-            margin-top: 2px;
-            font-weight: 400;
-        }
-
         .header-actions {
             display: flex;
             align-items: center;
             gap: 15px;
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-            font-size: 13px;
-            opacity: 0.95;
-        }
-
-        /* Navigation Breadcrumb */
+        /* Breadcrumb */
         .sap-breadcrumb {
             background: white;
             padding: 10px 0;
@@ -79,19 +64,13 @@
             padding: 0;
         }
 
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: ">";
-            color: var(--sap-gray);
-        }
-
-        /* Main Content Area */
+        /* Main Content */
         .main-content {
             padding: 20px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Page Title */
         .page-title {
             background: white;
             padding: 20px;
@@ -111,13 +90,7 @@
             gap: 10px;
         }
 
-        .page-title .subtitle {
-            color: var(--sap-gray);
-            font-size: 13px;
-            margin-top: 5px;
-        }
-
-        /* Tile Grid */
+        /* Dashboard Tiles */
         .tile-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -125,7 +98,6 @@
             margin-bottom: 30px;
         }
 
-        /* Individual Tiles */
         .sap-tile {
             background: white;
             border: 1px solid var(--sap-border);
@@ -134,7 +106,6 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             transition: all 0.2s ease;
             cursor: pointer;
-            position: relative;
             min-height: 140px;
             display: flex;
             flex-direction: column;
@@ -144,11 +115,6 @@
             box-shadow: 0 4px 16px rgba(0,0,0,0.15);
             transform: translateY(-1px);
             background: var(--sap-hover);
-        }
-
-        .sap-tile.active {
-            border-color: var(--sap-blue);
-            border-width: 2px;
         }
 
         .tile-header {
@@ -167,43 +133,30 @@
             margin-right: 12px;
             font-size: 16px;
             color: white;
-            flex-shrink: 0;
         }
 
         .tile-icon.blue { background: var(--sap-blue); }
         .tile-icon.green { background: var(--sap-green); }
         .tile-icon.orange { background: var(--sap-orange); }
         .tile-icon.red { background: var(--sap-red); }
-        .tile-icon.gray { background: var(--sap-gray); }
-
-        .tile-content {
-            flex: 1;
-        }
 
         .tile-title {
             font-size: 15px;
             font-weight: 600;
             color: #333;
             margin: 0 0 4px 0;
-            line-height: 1.2;
         }
 
         .tile-description {
             font-size: 11px;
             color: var(--sap-gray);
             margin: 0;
-            line-height: 1.3;
-        }
-
-        .tile-body {
-            margin-top: auto;
         }
 
         .stat-number {
             font-size: 28px;
             font-weight: 300;
             color: var(--sap-blue);
-            line-height: 1;
             margin-bottom: 5px;
         }
 
@@ -211,15 +164,12 @@
             font-size: 11px;
             color: var(--sap-gray);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
-        /* Action Buttons in Tiles */
         .tile-actions {
             display: flex;
             gap: 8px;
             margin-top: 15px;
-            flex-wrap: wrap;
         }
 
         .btn-tile {
@@ -231,18 +181,12 @@
             color: var(--sap-blue);
             text-decoration: none;
             transition: all 0.2s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 500;
             cursor: pointer;
         }
 
         .btn-tile:hover {
             background: var(--sap-light-blue);
             border-color: var(--sap-blue);
-            color: var(--sap-dark-blue);
-            text-decoration: none;
         }
 
         .btn-tile.primary {
@@ -251,19 +195,11 @@
             border-color: var(--sap-blue);
         }
 
-        .btn-tile.primary:hover {
-            background: var(--sap-dark-blue);
-            border-color: var(--sap-dark-blue);
-            color: white;
-        }
-
-        /* Data Table Section */
+        /* Data Section */
         .data-section {
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-            overflow: hidden;
-            margin-bottom: 20px;
         }
 
         .section-header {
@@ -273,7 +209,7 @@
             font-weight: 600;
             font-size: 15px;
             display: flex;
-            justify-content: space-between;
+            justify-content: between;
             align-items: center;
         }
 
@@ -295,13 +231,11 @@
             border-radius: 4px;
             padding: 8px 12px;
             font-size: 13px;
-            transition: border-color 0.2s ease;
         }
 
         .search-input:focus, .filter-select:focus {
             outline: none;
             border-color: var(--sap-blue);
-            box-shadow: 0 0 0 2px rgba(0, 112, 242, 0.1);
         }
 
         .toolbar-actions {
@@ -310,7 +244,7 @@
             gap: 8px;
         }
 
-        /* Table Styles */
+        /* Table */
         .data-table {
             font-size: 13px;
             margin: 0;
@@ -320,11 +254,9 @@
             background: #f8f9fa;
             border-bottom: 2px solid var(--sap-border);
             font-weight: 600;
-            color: #333;
             padding: 12px;
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .data-table tbody td {
@@ -344,17 +276,11 @@
             font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .status-good {
             background: #e8f5e8;
             color: var(--sap-green);
-        }
-
-        .status-warning {
-            background: #fff3e0;
-            color: var(--sap-orange);
         }
 
         .status-critical {
@@ -363,11 +289,6 @@
         }
 
         /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 4px;
-        }
-
         .btn-action {
             width: 28px;
             height: 28px;
@@ -379,45 +300,22 @@
             font-size: 11px;
             border: 1px solid var(--sap-border);
             background: white;
-            transition: all 0.2s ease;
+            margin-right: 4px;
             cursor: pointer;
         }
 
-        .btn-action:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
         /* Modals */
-        .modal-content {
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-        }
-
         .modal-header {
             background: var(--sap-blue);
             color: white;
             border-radius: 8px 8px 0 0;
-            padding: 15px 20px;
         }
 
-        .modal-title {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .btn-close {
-            filter: invert(1);
-        }
-
-        /* Form Controls */
         .form-control, .form-select {
             border: 1px solid var(--sap-border);
             border-radius: 4px;
             padding: 10px 12px;
             font-size: 13px;
-            transition: border-color 0.2s ease;
         }
 
         .form-control:focus, .form-select:focus {
@@ -430,121 +328,61 @@
             color: #333;
             font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 40px;
             color: var(--sap-gray);
-        }
-
-        .empty-state i {
-            font-size: 48px;
-            margin-bottom: 20px;
-            opacity: 0.5;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .tile-grid {
                 grid-template-columns: 1fr;
-                gap: 15px;
             }
-            
             .main-content {
                 padding: 15px;
             }
-            
             .toolbar-row {
                 flex-direction: column;
                 align-items: stretch;
             }
-            
-            .toolbar-actions {
-                margin-left: 0;
-                margin-top: 10px;
-            }
-        }
-
-        /* Loading States */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px;
-            color: var(--sap-gray);
-        }
-
-        .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-        }
-
-        /* Flash Messages */
-        .flash-messages {
-            margin: 20px;
-        }
-
-        .alert {
-            border-radius: 6px;
-            border: none;
-            font-size: 13px;
-            display: flex;
-            align-items: start;
-            gap: 10px;
-        }
-
-        .alert i {
-            margin-top: 2px;
         }
     </style>
 </head>
 <body>
-    <!-- SAP-Style Header -->
+    <!-- Header -->
     <div class="sap-header">
         <div class="container-fluid">
             <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1>
-                        <i class="fas fa-car me-2"></i>
-                        CarMinder Fleet Management
-                    </h1>
-                    <div class="subtitle">Professional Vehicle Maintenance Tracking System</div>
-                </div>
+                <h1>
+                    <i class="fas fa-car me-2"></i>
+                    CarMinder Fleet Management
+                </h1>
                 <div class="header-actions">
-                    <div class="user-info">
-                        <i class="fas fa-user-circle me-2"></i>
-                        Administrator
-                    </div>
+                    <span class="me-3">
+                        <i class="fas fa-user-circle me-2"></i>Administrator
+                    </span>
                     <button class="btn btn-outline-light btn-sm">
                         <i class="fas fa-cog"></i>
-                    </button>
-                    <button class="btn btn-outline-light btn-sm">
-                        <i class="fas fa-bell"></i>
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Breadcrumb Navigation -->
+    <!-- Breadcrumb -->
     <div class="sap-breadcrumb">
         <div class="container-fluid">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Fleet Management Dashboard</li>
+                    <li class="breadcrumb-item active">Fleet Management Dashboard</li>
                 </ol>
             </nav>
         </div>
-    </div>
-
-    <!-- Flash Messages -->
-    <div class="flash-messages" id="flashMessages">
-        <!-- Dynamic flash messages will be inserted here -->
     </div>
 
     <!-- Main Content -->
@@ -555,29 +393,25 @@
                 <i class="fas fa-tachometer-alt text-primary"></i>
                 Fleet Management Dashboard
             </h2>
-            <div class="subtitle">Monitor and manage your vehicle fleet maintenance schedules</div>
         </div>
 
         <!-- Dashboard Tiles -->
         <div class="tile-grid">
-            <!-- Fleet Overview Tile -->
-            <div class="sap-tile" onclick="scrollToSection('vehicles-section')">
+            <!-- Fleet Overview -->
+            <div class="sap-tile">
                 <div class="tile-header">
                     <div class="tile-icon blue">
                         <i class="fas fa-car"></i>
                     </div>
-                    <div class="tile-content">
+                    <div>
                         <h3 class="tile-title">Fleet Overview</h3>
-                        <p class="tile-description">Total vehicles registered in system</p>
+                        <p class="tile-description">Total vehicles in system</p>
                     </div>
                 </div>
-                <div class="tile-body">
-                    <div class="stat-number" id="totalVehicles">5</div>
+                <div class="mt-auto">
+                    <div class="stat-number" id="totalVehicles">{{ total_vehicles }}</div>
                     <div class="stat-label">Registered Vehicles</div>
                     <div class="tile-actions">
-                        <a href="#vehicles-section" class="btn-tile">
-                            <i class="fas fa-list"></i> View All
-                        </a>
                         <button class="btn-tile primary" data-bs-toggle="modal" data-bs-target="#add-car-modal">
                             <i class="fas fa-plus"></i> Add Vehicle
                         </button>
@@ -585,164 +419,86 @@
                 </div>
             </div>
 
-            <!-- Service Required Tile -->
-            <div class="sap-tile" onclick="filterTable('critical')">
+            <!-- Service Required -->
+            <div class="sap-tile">
                 <div class="tile-header">
                     <div class="tile-icon red">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
-                    <div class="tile-content">
+                    <div>
                         <h3 class="tile-title">Service Required</h3>
-                        <p class="tile-description">Vehicles needing immediate attention</p>
+                        <p class="tile-description">Vehicles needing attention</p>
                     </div>
                 </div>
-                <div class="tile-body">
-                    <div class="stat-number" id="criticalVehicles">2</div>
+                <div class="mt-auto">
+                    <div class="stat-number" id="criticalVehicles">{{ critical_count }}</div>
                     <div class="stat-label">Critical Status</div>
-                    <div class="tile-actions">
-                        <button class="btn-tile" onclick="filterTable('critical')">
-                            <i class="fas fa-filter"></i> View Critical
-                        </button>
-                        <button class="btn-tile">
-                            <i class="fas fa-wrench"></i> Schedule Service
-                        </button>
-                    </div>
                 </div>
             </div>
 
-            <!-- Up to Date Tile -->
-            <div class="sap-tile" onclick="filterTable('good')">
+            <!-- Up to Date -->
+            <div class="sap-tile">
                 <div class="tile-header">
                     <div class="tile-icon green">
                         <i class="fas fa-check-circle"></i>
                     </div>
-                    <div class="tile-content">
+                    <div>
                         <h3 class="tile-title">Up to Date</h3>
-                        <p class="tile-description">Vehicles with current maintenance</p>
+                        <p class="tile-description">Current maintenance</p>
                     </div>
                 </div>
-                <div class="tile-body">
-                    <div class="stat-number" id="goodVehicles">3</div>
+                <div class="mt-auto">
+                    <div class="stat-number" id="goodVehicles">{{ good_count }}</div>
                     <div class="stat-label">Current Status</div>
-                    <div class="tile-actions">
-                        <button class="btn-tile" onclick="filterTable('good')">
-                            <i class="fas fa-eye"></i> View Details
-                        </button>
-                    </div>
                 </div>
             </div>
 
-            <!-- Oil Calculator Tile -->
+            <!-- Oil Calculator -->
             <div class="sap-tile" data-bs-toggle="modal" data-bs-target="#calculator-modal">
                 <div class="tile-header">
                     <div class="tile-icon orange">
                         <i class="fas fa-calculator"></i>
                     </div>
-                    <div class="tile-content">
-                        <h3 class="tile-title">Oil Change Calculator</h3>
-                        <p class="tile-description">Calculate maintenance intervals</p>
+                    <div>
+                        <h3 class="tile-title">Oil Calculator</h3>
+                        <p class="tile-description">Calculate intervals</p>
                     </div>
                 </div>
-                <div class="tile-body">
+                <div class="mt-auto">
                     <div class="tile-actions">
                         <button class="btn-tile primary" data-bs-toggle="modal" data-bs-target="#calculator-modal">
-                            <i class="fas fa-calculator"></i> Open Calculator
-                        </button>
-                        <button class="btn-tile" onclick="calculateAll()">
-                            <i class="fas fa-sync"></i> Update All
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Reports Tile -->
-            <div class="sap-tile">
-                <div class="tile-header">
-                    <div class="tile-icon blue">
-                        <i class="fas fa-chart-bar"></i>
-                    </div>
-                    <div class="tile-content">
-                        <h3 class="tile-title">Reports & Analytics</h3>
-                        <p class="tile-description">Fleet performance insights</p>
-                    </div>
-                </div>
-                <div class="tile-body">
-                    <div class="tile-actions">
-                        <button class="btn-tile">
-                            <i class="fas fa-file-alt"></i> Maintenance Report
-                        </button>
-                        <button class="btn-tile" onclick="exportTable()">
-                            <i class="fas fa-download"></i> Export Data
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- System Settings Tile -->
-            <div class="sap-tile">
-                <div class="tile-header">
-                    <div class="tile-icon gray">
-                        <i class="fas fa-cogs"></i>
-                    </div>
-                    <div class="tile-content">
-                        <h3 class="tile-title">System Settings</h3>
-                        <p class="tile-description">Configure application settings</p>
-                    </div>
-                </div>
-                <div class="tile-body">
-                    <div class="tile-actions">
-                        <button class="btn-tile">
-                            <i class="fas fa-sliders-h"></i> Preferences
-                        </button>
-                        <button class="btn-tile">
-                            <i class="fas fa-users"></i> User Management
+                            <i class="fas fa-calculator"></i> Calculator
                         </button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Vehicles Data Section -->
+        <!-- Vehicles Table Section -->
         <div class="data-section" id="vehicles-section">
-            <!-- Section Header -->
             <div class="section-header">
-                <div class="d-flex align-items-center">
+                <div>
                     <i class="fas fa-car me-2"></i>
                     All Registered Vehicles
                 </div>
-                <div class="ms-auto">
-                    <span class="badge bg-light text-dark" id="vehicleCount">5 vehicles</span>
-                </div>
+                <span class="badge bg-light text-dark" id="vehicleCount">{{ vehicles|length }} vehicles</span>
             </div>
 
             <!-- Toolbar -->
             <div class="section-toolbar">
                 <div class="toolbar-row">
-                    <div class="d-flex gap-3 flex-grow-1">
-                        <input type="text" class="search-input" id="searchInput" placeholder="Search by plate number, owner, or model..." style="width: 300px;">
-                        <select class="filter-select" id="statusFilter" style="width: 150px;">
-                            <option value="">All Status</option>
-                            <option value="good">Up to Date</option>
-                            <option value="warning">Warning</option>
-                            <option value="critical">Critical</option>
-                        </select>
-                        <select class="filter-select" id="modelFilter" style="width: 150px;">
-                            <option value="">All Models</option>
-                            <option value="Toyota Camry">Toyota Camry</option>
-                            <option value="Honda Civic">Honda Civic</option>
-                            <option value="Ford Focus">Ford Focus</option>
-                            <option value="BMW 3 Series">BMW 3 Series</option>
-                        </select>
-                    </div>
+                    <input type="text" class="search-input" placeholder="Search vehicles..." style="width: 300px;">
+                    <select class="filter-select" style="width: 150px;">
+                        <option value="">All Status</option>
+                        <option value="good">Up to Date</option>
+                        <option value="critical">Critical</option>
+                    </select>
                     <div class="toolbar-actions">
-                        <button class="btn btn-outline-primary btn-sm" onclick="exportTable()">
-                            <i class="fas fa-download me-1"></i>Export
-                        </button>
-                        <button class="btn btn-outline-secondary btn-sm" onclick="refreshTable()">
-                            <i class="fas fa-sync me-1"></i>Refresh
+                        <button class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-download"></i> Export
                         </button>
                         <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#add-car-modal">
-                            <i class="fas fa-plus me-1"></i>Add Vehicle
+                            <i class="fas fa-plus"></i> Add Vehicle
                         </button>
                     </div>
                 </div>
@@ -759,241 +515,131 @@
                             <th>Phone</th>
                             <th>Mileage</th>
                             <th>Gas Type</th>
-                            <th>Oil Status</th>
-                            <th>Last Service</th>
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="carsTableBody">
-                        <!-- Sample data -->
-                        <tr data-model="Toyota Camry" data-status="critical">
-                            <td><strong>ABC-123</strong></td>
-                            <td>Toyota Camry</td>
-                            <td>John Smith</td>
-                            <td>+1-234-567-8900</td>
-                            <td>65,000 km</td>
-                            <td><span class="badge bg-info">95</span></td>
-                            <td><span class="status-badge status-critical">Service Required</span></td>
-                            <td>60,000 km</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn btn-primary btn-action" onclick="viewCar(1)" title="View Details">
+                        {% if vehicles %}
+                            {% for vehicle in vehicles %}
+                            <tr>
+                                <td><strong>{{ vehicle.plate_number }}</strong></td>
+                                <td>{{ vehicle.car_model }}</td>
+                                <td>{{ vehicle.owner_name }}</td>
+                                <td>{{ vehicle.owner_phone }}</td>
+                                <td>{{ vehicle.mileage }} km</td>
+                                <td><span class="badge bg-info">{{ vehicle.gas_type }}</span></td>
+                                <td>
+                                    <span class="status-badge {% if vehicle.status == 'critical' %}status-critical{% else %}status-good{% endif %}">
+                                        {{ vehicle.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-primary btn-action" title="View">
                                         <i class="fas fa-eye"></i>
                                     </button>
-                                    <button class="btn btn-success btn-action" onclick="markService(1)" title="Mark Service Done">
+                                    <button class="btn btn-success btn-action" title="Service">
                                         <i class="fas fa-wrench"></i>
                                     </button>
-                                    <button class="btn btn-info btn-action" onclick="updateMileage(1)" title="Update Mileage">
-                                        <i class="fas fa-tachometer-alt"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-action" onclick="deleteCar(1)" title="Delete">
+                                    <button class="btn btn-danger btn-action" title="Delete">
                                         <i class="fas fa-trash"></i>
                                     </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-model="Honda Civic" data-status="good">
-                            <td><strong>DEF-456</strong></td>
-                            <td>Honda Civic</td>
-                            <td>Jane Doe</td>
-                            <td>+1-234-567-8901</td>
-                            <td>42,000 km</td>
-                            <td><span class="badge bg-warning">92</span></td>
-                            <td><span class="status-badge status-good">Up to Date</span></td>
-                            <td>40,000 km</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn btn-primary btn-action" onclick="viewCar(2)" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-success btn-action" onclick="markService(2)" title="Mark Service Done">
-                                        <i class="fas fa-wrench"></i>
-                                    </button>
-                                    <button class="btn btn-info btn-action" onclick="updateMileage(2)" title="Update Mileage">
-                                        <i class="fas fa-tachometer-alt"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-action" onclick="deleteCar(2)" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-model="Ford Focus" data-status="critical">
-                            <td><strong>GHI-789</strong></td>
-                            <td>Ford Focus</td>
-                            <td>Mike Johnson</td>
-                            <td>+1-234-567-8902</td>
-                            <td>88,500 km</td>
-                            <td><span class="badge bg-success">98</span></td>
-                            <td><span class="status-badge status-critical">Service Required</span></td>
-                            <td>80,000 km</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn btn-primary btn-action" onclick="viewCar(3)" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-success btn-action" onclick="markService(3)" title="Mark Service Done">
-                                        <i class="fas fa-wrench"></i>
-                                    </button>
-                                    <button class="btn btn-info btn-action" onclick="updateMileage(3)" title="Update Mileage">
-                                        <i class="fas fa-tachometer-alt"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-action" onclick="deleteCar(3)" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-
-
-                                                <tr data-model="BMW 3 Series" data-status="good">
-                            <td><strong>JKL-012</strong></td>
-                            <td>BMW 3 Series</td>
-                            <td>Sarah Williams</td>
-                            <td>+1-234-567-8903</td>
-                            <td>30,000 km</td>
-                            <td><span class="badge bg-success">97</span></td>
-                            <td><span class="status-badge status-good">Up to Date</span></td>
-                            <td>28,000 km</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn btn-primary btn-action" onclick="viewCar(4)" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-success btn-action" onclick="markService(4)" title="Mark Service Done">
-                                        <i class="fas fa-wrench"></i>
-                                    </button>
-                                    <button class="btn btn-info btn-action" onclick="updateMileage(4)" title="Update Mileage">
-                                        <i class="fas fa-tachometer-alt"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-action" onclick="deleteCar(4)" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr data-model="Toyota Camry" data-status="good">
-                            <td><strong>MNO-345</strong></td>
-                            <td>Toyota Camry</td>
-                            <td>Emily Brown</td>
-                            <td>+1-234-567-8904</td>
-                            <td>25,500 km</td>
-                            <td><span class="badge bg-success">95</span></td>
-                            <td><span class="status-badge status-good">Up to Date</span></td>
-                            <td>25,000 km</td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button class="btn btn-primary btn-action" onclick="viewCar(5)" title="View Details">
-                                        <i class="fas fa-eye"></i>
-                                    </button>
-                                    <button class="btn btn-success btn-action" onclick="markService(5)" title="Mark Service Done">
-                                        <i class="fas fa-wrench"></i>
-                                    </button>
-                                    <button class="btn btn-info btn-action" onclick="updateMileage(5)" title="Update Mileage">
-                                        <i class="fas fa-tachometer-alt"></i>
-                                    </button>
-                                    <button class="btn btn-danger btn-action" onclick="deleteCar(5)" title="Delete">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <i class="fas fa-car-side"></i>
+                                    <h5>No vehicles registered</h5>
+                                    <p>Add your first vehicle to get started</p>
+                                </td>
+                            </tr>
+                        {% endif %}
                     </tbody>
                 </table>
             </div>
         </div>
+    </div>
 
-        <!-- Add Vehicle Modal -->
-        <div class="modal fade" id="add-car-modal" tabindex="-1" aria-labelledby="addCarModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form id="addCarForm" class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addCarModalLabel">Add New Vehicle</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Add Vehicle Modal -->
+    <div class="modal fade" id="add-car-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="POST" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Vehicle</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Plate Number</label>
+                        <input type="text" class="form-control" name="plate_number" required>
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="plateNumber" class="form-label">Plate Number</label>
-                            <input type="text" class="form-control" id="plateNumber" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="carModel" class="form-label">Car Model</label>
-                            <input type="text" class="form-control" id="carModel" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ownerName" class="form-label">Owner Name</label>
-                            <input type="text" class="form-control" id="ownerName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="ownerPhone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="ownerPhone" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mileage" class="form-label">Mileage (km)</label>
-                            <input type="number" class="form-control" id="mileage" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="gasType" class="form-label">Gas Type</label>
-                            <select class="form-select" id="gasType" required>
-                                <option value="">Select Gas Type</option>
-                                <option value="95">95</option>
-                                <option value="92">92</option>
-                                <option value="98">98</option>
-                                <option value="Diesel">Diesel</option>
-                            </select>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Car Model</label>
+                        <input type="text" class="form-control" name="car_model" required>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Add Vehicle</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <div class="mb-3">
+                        <label class="form-label">Owner Name</label>
+                        <input type="text" class="form-control" name="owner_name" required>
                     </div>
-                </form>
-            </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" name="owner_phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Mileage (km)</label>
+                        <input type="number" class="form-control" name="mileage" min="0" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Gas Type</label>
+                        <select class="form-select" name="gas_type" required>
+                            <option value="">Select Gas Type</option>
+                            <option value="95">95</option>
+                            <option value="92">92</option>
+                            <option value="98">98</option>
+                            <option value="Diesel">Diesel</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Add Vehicle</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
         </div>
+    </div>
 
-        <!-- Oil Calculator Modal -->
-        <div class="modal fade" id="calculator-modal" tabindex="-1" aria-labelledby="calculatorModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <form id="oilCalculatorForm" class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="calculatorModalLabel">Oil Change Calculator</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Oil Calculator Modal -->
+    <div class="modal fade" id="calculator-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Oil Change Calculator</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Current Mileage (km)</label>
+                        <input type="number" class="form-control" min="0" required>
                     </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="calcMileage" class="form-label">Current Mileage (km)</label>
-                            <input type="number" class="form-control" id="calcMileage" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="calcGasType" class="form-label">Gas Type</label>
-                            <select class="form-select" id="calcGasType" required>
-                                <option value="">Select Gas Type</option>
-                                <option value="95">95</option>
-                                <option value="92">92</option>
-                                <option value="98">98</option>
-                                <option value="Diesel">Diesel</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="lastOilChangeKm" class="form-label">Last Oil Change Mileage (km)</label>
-                            <input type="number" class="form-control" id="lastOilChangeKm" min="0" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="oilBrand" class="form-label">Oil Brand/Type</label>
-                            <input type="text" class="form-control" id="oilBrand" placeholder="e.g. Mobil 1, Castrol" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="recommendedInterval" class="form-label">Recommended Interval (km)</label>
-                            <input type="number" class="form-control" id="recommendedInterval" min="0" required>
-                        </div>
-                        <div id="calcResult" class="alert alert-info d-none"></div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Oil Change (km)</label>
+                        <input type="number" class="form-control" min="0" required>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Calculate</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <div class="mb-3">
+                        <label class="form-label">Recommended Interval (km)</label>
+                        <input type="number" class="form-control" min="0" value="5000" required>
                     </div>
-                </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Calculate</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
-<!-- End Main Content -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
