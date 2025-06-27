@@ -1,205 +1,436 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Your Fleet - CarMinder</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --success-color: #00b894;
+            --background-color: #f8f9fa;
+            --text-color: #2d3436;
+            --border-color: #e9ecef;
+            --input-focus: #6c5ce7;
+        }
 
-{% block title %}Register Your Car - CarMinder{% endblock %}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px 0;
+        }
 
-{% block content %}
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white text-center py-4">
-                    <h2 class="mb-0">
-                        <i class="fas fa-car-alt"></i> Register Your Vehicle
-                    </h2>
-                    <p class="mb-0 mt-2">Enter your car's information to start tracking maintenance</p>
-                </div>
-                <div class="card-body p-5">
-                    <form method="POST" class="needs-validation" novalidate>
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <label for="plate_number" class="form-label fw-bold">
-                                    <i class="fas fa-id-card text-primary"></i> Car Plate Number *
-                                </label>
-                                <input type="text" class="form-control" id="plate_number" name="plate_number" 
-                                       placeholder="e.g., 10-AA-123" required style="text-transform: uppercase;">
-                                <div class="invalid-feedback">
-                                    Please provide a valid plate number.
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-4">
-                                <label for="car_model" class="form-label fw-bold">
-                                    <i class="fas fa-car text-primary"></i> Car Model *
-                                </label>
-                                <select class="form-select" id="car_model" name="car_model" required>
-                                    <option value="">Choose your car model...</option>
-                                    <optgroup label="Toyota">
-                                        <option value="Toyota Camry">Toyota Camry</option>
-                                        <option value="Toyota Corolla">Toyota Corolla</option>
-                                        <option value="Toyota RAV4">Toyota RAV4</option>
-                                        <option value="Toyota Prius">Toyota Prius</option>
-                                        <option value="Toyota Land Cruiser">Toyota Land Cruiser</option>
-                                    </optgroup>
-                                    <optgroup label="Honda">
-                                        <option value="Honda Civic">Honda Civic</option>
-                                        <option value="Honda Accord">Honda Accord</option>
-                                        <option value="Honda CR-V">Honda CR-V</option>
-                                        <option value="Honda Pilot">Honda Pilot</option>
-                                    </optgroup>
-                                    <optgroup label="BMW">
-                                        <option value="BMW 3 Series">BMW 3 Series</option>
-                                        <option value="BMW 5 Series">BMW 5 Series</option>
-                                        <option value="BMW X3">BMW X3</option>
-                                        <option value="BMW X5">BMW X5</option>
-                                    </optgroup>
-                                    <optgroup label="Mercedes-Benz">
-                                        <option value="Mercedes C-Class">Mercedes C-Class</option>
-                                        <option value="Mercedes E-Class">Mercedes E-Class</option>
-                                        <option value="Mercedes GLC">Mercedes GLC</option>
-                                        <option value="Mercedes GLE">Mercedes GLE</option>
-                                    </optgroup>
-                                    <optgroup label="Audi">
-                                        <option value="Audi A4">Audi A4</option>
-                                        <option value="Audi A6">Audi A6</option>
-                                        <option value="Audi Q5">Audi Q5</option>
-                                        <option value="Audi Q7">Audi Q7</option>
-                                    </optgroup>
-                                    <optgroup label="Hyundai">
-                                        <option value="Hyundai Elantra">Hyundai Elantra</option>
-                                        <option value="Hyundai Sonata">Hyundai Sonata</option>
-                                        <option value="Hyundai Tucson">Hyundai Tucson</option>
-                                        <option value="Hyundai Santa Fe">Hyundai Santa Fe</option>
-                                    </optgroup>
-                                    <optgroup label="Other">
-                                        <option value="Other">Other (Specify in owner field)</option>
-                                    </optgroup>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select your car model.
-                                </div>
-                            </div>
-                        </div>
+        .container {
+            max-width: 600px;
+        }
 
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <label for="owner" class="form-label fw-bold">
-                                    <i class="fas fa-user text-primary"></i> Owner Name *
-                                </label>
-                                <input type="text" class="form-control" id="owner" name="owner" 
-                                       placeholder="Full name of the car owner" required>
-                                <div class="invalid-feedback">
-                                    Please provide the owner's name.
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-4">
-                                <label for="tel_no" class="form-label fw-bold">
-                                    <i class="fas fa-phone text-primary"></i> Phone Number *
-                                </label>
-                                <input type="tel" class="form-control" id="tel_no" name="tel_no" 
-                                       placeholder="+994XXXXXXXXX" required>
-                                <div class="invalid-feedback">
-                                    Please provide a valid phone number.
-                                </div>
-                            </div>
-                        </div>
+        .register-panel {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            overflow: hidden;
+        }
 
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <label for="mileage" class="form-label fw-bold">
-                                    <i class="fas fa-tachometer-alt text-primary"></i> Current Mileage (km) *
-                                </label>
-                                <input type="number" class="form-control" id="mileage" name="mileage" 
-                                       placeholder="e.g., 45000" min="0" required>
-                                <div class="invalid-feedback">
-                                    Please provide the current mileage.
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-4">
-                                <label for="production_date" class="form-label fw-bold">
-                                    <i class="fas fa-calendar text-primary"></i> Production Date *
-                                </label>
-                                <input type="date" class="form-control" id="production_date" name="production_date" required>
-                                <div class="invalid-feedback">
-                                    Please provide the production date.
-                                </div>
-                            </div>
-                        </div>
+        .panel-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
 
-                        <div class="row">
-                            <div class="col-md-6 mb-4">
-                                <label for="gas_type" class="form-label fw-bold">
-                                    <i class="fas fa-gas-pump text-primary"></i> Gas Type *
-                                </label>
-                                <select class="form-select" id="gas_type" name="gas_type" required>
-                                    <option value="">Choose gas type...</option>
-                                    <option value="92">92 Octane</option>
-                                    <option value="95">95 Octane</option>
-                                    <option value="98">98 Octane (Premium)</option>
-                                    <option value="diesel">Diesel</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select the gas type.
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6 mb-4">
-                                <label for="oil_type" class="form-label fw-bold">
-                                    <i class="fas fa-oil-can text-primary"></i> Oil Type *
-                                </label>
-                                <select class="form-select" id="oil_type" name="oil_type" required>
-                                    <option value="">Choose oil type...</option>
-                                    <option value="cheap">Economy Oil (Cheap)</option>
-                                    <option value="standard">Standard Oil</option>
-                                    <option value="premium">Premium Synthetic Oil</option>
-                                </select>
-                                <div class="invalid-feedback">
-                                    Please select the oil type.
-                                </div>
-                            </div>
-                        </div>
+        .panel-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
 
-                        <div class="text-center mt-4">
-                            <button type="submit" class="btn btn-primary btn-lg px-5">
-                                <i class="fas fa-save"></i> Register Vehicle
-                            </button>
-                        </div>
-                    </form>
-                    
-                    <div class="text-center mt-4">
-                        <p class="text-muted">Already have an account? 
-                            <a href="{{ url_for('main.login') }}" class="text-decoration-none fw-bold">Login Here</a>
-                        </p>
+        .panel-header p {
+            margin: 8px 0 0 0;
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .panel-body {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: #a0a0a0;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .input-group-single {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-register {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 16px 32px;
+            width: 100%;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
+        }
+
+        .panel-footer {
+            background: var(--background-color);
+            padding: 20px 40px;
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .panel-footer p {
+            margin: 0;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .panel-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .panel-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .alert {
+            border-radius: 8px;
+            border: none;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success-color);
+        }
+
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+        }
+
+        .icon-wrapper {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .panel-body {
+                padding: 30px 20px;
+            }
+
+            .panel-footer {
+                padding: 20px;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .feature-highlight {
+            background: rgba(108, 92, 231, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .feature-highlight h6 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .feature-highlight p {
+            margin: 0;
+            font-size: 12px;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="register-panel">
+            <!-- Header -->
+            <div class="panel-header">
+                <h1>
+                    <div class="icon-wrapper">
+                        <i class="fas fa-car"></i>
                     </div>
+                    Fleet Registration
+                </h1>
+                <p>Start managing your vehicle fleet professionally</p>
+            </div>
+
+            <!-- Body -->
+            <div class="panel-body">
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'danger' if category == 'error' else category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <!-- Feature Highlight -->
+                <div class="feature-highlight">
+                    <h6><i class="fas fa-shield-alt me-2"></i>Free instant access. No credit card required.</h6>
+                    <p>Professional fleet management with intelligent oil change tracking</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form method="POST" id="registerForm">
+                    <!-- Business Information -->
+                    <div class="form-group">
+                        <label class="form-label">Business Owner Name</label>
+                        <input type="text" class="form-control" name="owner_name" 
+                               placeholder="Enter your full name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Business Name</label>
+                        <input type="text" class="form-control" name="business_name" 
+                               placeholder="Your garage/service center name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div>
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" name="email" 
+                                       placeholder="your@email.com" required>
+                            </div>
+                            <div>
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" name="phone" 
+                                       placeholder="+994XXXXXXXXX" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div>
+                                <label class="form-label">Country</label>
+                                <select class="form-select" name="country" required>
+                                    <option value="">Select Country</option>
+                                    <option value="Azerbaijan" selected>Azerbaijan</option>
+                                    <option value="Turkey">Turkey</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Language</label>
+                                <select class="form-select" name="language" required>
+                                    <option value="">Select Language</option>
+                                    <option value="English" selected>English</option>
+                                    <option value="Azerbaijani">Azerbaijani</option>
+                                    <option value="Turkish">Turkish</option>
+                                    <option value="Russian">Russian</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
+                            <div>
+                                <label class="form-label">Business Size</label>
+                                <select class="form-select" name="business_size" required>
+                                    <option value="">Select Size</option>
+                                    <option value="1-5 vehicles">1 - 5 vehicles</option>
+                                    <option value="6-20 vehicles">6 - 20 vehicles</option>
+                                    <option value="21-50 vehicles">21 - 50 vehicles</option>
+                                    <option value="50+ vehicles">50+ vehicles</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">Primary Interest</label>
+                                <select class="form-select" name="primary_interest" required>
+                                    <option value="">Select Interest</option>
+                                    <option value="Fleet Management" selected>Fleet Management</option>
+                                    <option value="Customer Service">Customer Service</option>
+                                    <option value="Maintenance Tracking">Maintenance Tracking</option>
+                                    <option value="Business Analytics">Business Analytics</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-register">
+                        <i class="fas fa-rocket me-2"></i>
+                        Start Now
+                    </button>
+                </form>
+            </div>
+
+            <!-- Footer -->
+            <div class="panel-footer">
+                <p>
+                    By clicking on Start Now, you accept our 
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of Service</a> 
+                    and 
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a>
+                </p>
+                <p class="mt-2">
+                    Already have an account? 
+                    <a href="{{ url_for('main.admin_dashboard') }}">Sign in here</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Terms of Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Welcome to CarMinder Fleet Management System. By using our service, you agree to:</p>
+                    <ul>
+                        <li>Use the system for legitimate business purposes</li>
+                        <li>Maintain accurate vehicle and customer information</li>
+                        <li>Respect customer privacy and data protection</li>
+                        <li>Follow automotive industry best practices</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-// Bootstrap form validation
-(function() {
-    'use strict';
-    window.addEventListener('load', function() {
-        var forms = document.getElementsByClassName('needs-validation');
-        var validation = Array.prototype.filter.call(forms, function(form) {
-            form.addEventListener('submit', function(event) {
-                if (form.checkValidity() === false) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
-                form.classList.add('was-validated');
-            }, false);
+    <!-- Privacy Modal -->
+    <div class="modal fade" id="privacyModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Privacy Policy</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>CarMinder is committed to protecting your privacy:</p>
+                    <ul>
+                        <li>We collect only necessary business information</li>
+                        <li>Your data is stored securely and never sold</li>
+                        <li>Customer vehicle data remains confidential</li>
+                        <li>You can request data deletion at any time</li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form validation and enhancement
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            const btn = document.querySelector('.btn-register');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Creating Account...';
+            btn.disabled = true;
+            
+            // Simulate registration process
+            setTimeout(() => {
+                // In real implementation, this would submit to your backend
+                alert('Registration successful! Redirecting to dashboard...');
+                window.location.href = '{{ url_for("main.admin_dashboard") }}';
+            }, 2000);
         });
-    }, false);
-})();
 
-// Set max date for production date (today)
-document.addEventListener('DOMContentLoaded', function() {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('production_date').setAttribute('max', today);
-});
-</script>
-{% endblock %}
+        // Phone number formatting
+        document.querySelector('input[name="phone"]').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('994')) {
+                value = '+' + value;
+            } else if (value.length > 0 && !value.startsWith('994')) {
+                value = '+994' + value;
+            }
+            e.target.value = value;
+        });
+
+        // Business name auto-fill
+        document.querySelector('input[name="owner_name"]').addEventListener('blur', function(e) {
+            const businessField = document.querySelector('input[name="business_name"]');
+            if (!businessField.value && e.target.value) {
+                businessField.value = e.target.value + ' Auto Service';
+            }
+        });
+    </script>
+</body>
+</html>
