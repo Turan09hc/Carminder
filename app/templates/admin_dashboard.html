@@ -598,10 +598,18 @@
                                        placeholder="e.g., 10-AA-123" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Car Model</label>
-                                <input type="text" class="form-control" name="car_model" 
-                                       placeholder="e.g., Toyota Camry" required>
-                            </div>
+    <label class="form-label">Car Model</label>
+    <select class="form-select" name="car_model_id" id="carModelSelect" required>
+        <option value="">Loading car models...</option>
+    </select>
+    <div class="mt-2">
+        <small class="text-muted">Can't find your model?</small>
+        <button type="button" class="btn btn-link btn-sm p-0" onclick="toggleCustomModel()">
+            Enter custom model
+        </button>
+    </div>
+    <input type="text" class="form-control mt-2 d-none" name="custom_model" 
+           id="customModelInput" placeholder="Enter custom car model">
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -702,6 +710,60 @@
         function exportData() {
             alert('Export functionality - ready for implementation');
         }
+        // Load car models when modal opens
+document.getElementById('addVehicleModal').addEventListener('show.bs.modal', function() {
+    loadCarModels();
+});
+
+// Load car models via AJAX
+function loadCarModels() {
+    const select = document.getElementById('carModelSelect');
+    
+    fetch('/api/car_models')
+        .then(response => response.json())
+        .then(data => {
+            select.innerHTML = '<option value="">Select a car model</option>';
+            
+            // Group models by brand
+            Object.keys(data).sort().forEach(brand => {
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = brand;
+                
+                data[brand].forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = model.display;
+                    option.dataset.fuelType = model.fuel_type;
+                    optgroup.appendChild(option);
+                });
+                
+                select.appendChild(optgroup);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading car models:', error);
+            select.innerHTML = '<option value="">Error loading models - use custom model</option>';
+        });
+}
+
+// Toggle custom model input
+function toggleCustomModel() {
+    const select = document.getElementById('carModelSelect');
+    const customInput = document.getElementById('customModelInput');
+    
+    if (customInput.classList.contains('d-none')) {
+        customInput.classList.remove('d-none');
+        customInput.required = true;
+        select.required = false;
+        select.value = '';
+        customInput.focus();
+    } else {
+        customInput.classList.add('d-none');
+        customInput.required = false;
+        select.required = true;
+        customInput.value = '';
+    }
+}
     </script>
 </body>
 </html>
