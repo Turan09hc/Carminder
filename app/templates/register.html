@@ -173,6 +173,35 @@
             font-size: 18px;
         }
 
+        .logo-upload-section {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+
+        .logo-upload-section:hover {
+            border-color: var(--primary-color);
+            background: rgba(108, 92, 231, 0.05);
+        }
+
+        .logo-preview {
+            max-width: 80px;
+            max-height: 60px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
         @media (max-width: 768px) {
             .panel-body {
                 padding: 30px 20px;
@@ -238,11 +267,25 @@
                 <!-- Feature Highlight -->
                 <div class="feature-highlight">
                     <h6><i class="fas fa-shield-alt me-2"></i>Free instant access. No credit card required.</h6>
-                    <p>Professional fleet management with intelligent oil change tracking</p>
+                    <p>Professional fleet management with intelligent maintenance tracking for all vehicle types including electric cars</p>
                 </div>
 
                 <!-- Registration Form -->
-                <form method="POST" id="registerForm">
+                <form method="POST" action="{{ url_for('main.register') }}" enctype="multipart/form-data" id="registerForm">
+                    <!-- Company Logo Upload -->
+                    <div class="form-group">
+                        <label class="form-label">Company Logo (Optional)</label>
+                        <div class="logo-upload-section" onclick="document.getElementById('logoInput').click()">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <img id="logoPreview" class="logo-preview" alt="Logo Preview">
+                            <p class="mb-0">Click to upload your company logo</p>
+                            <small class="text-muted">PNG, JPG, GIF, SVG • Max 5MB</small>
+                        </div>
+                        <input type="file" id="logoInput" name="logo" accept=".png,.jpg,.jpeg,.gif,.svg" style="display: none;">
+                    </div>
+
                     <!-- Business Information -->
                     <div class="form-group">
                         <label class="form-label">Business Owner Name</label>
@@ -355,7 +398,7 @@
                 </p>
                 <p class="mt-2">
                     Already have an account? 
-                    <a href="{{ url_for('main.admin_dashboard') }}">Sign in here</a>
+                    <a href="{{ url_for('main.login') }}">Sign in here</a>
                 </p>
             </div>
         </div>
@@ -376,6 +419,7 @@
                         <li>Maintain accurate vehicle and customer information</li>
                         <li>Respect customer privacy and data protection</li>
                         <li>Follow automotive industry best practices</li>
+                        <li>Properly manage electric and hybrid vehicle maintenance</li>
                     </ul>
                 </div>
                 <div class="modal-footer">
@@ -399,6 +443,7 @@
                         <li>We collect only necessary business information</li>
                         <li>Your data is stored securely and never sold</li>
                         <li>Customer vehicle data remains confidential</li>
+                        <li>Company logos are stored securely</li>
                         <li>You can request data deletion at any time</li>
                     </ul>
                 </div>
@@ -411,6 +456,44 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Logo preview functionality
+        document.getElementById('logoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('logoPreview');
+            const uploadSection = document.querySelector('.logo-upload-section');
+            
+            if (file) {
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('File too large! Maximum size is 5MB.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validate file type
+                const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/svg+xml'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Invalid file type! Please upload PNG, JPG, JPEG, GIF, or SVG files.');
+                    this.value = '';
+                    return;
+                }
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    uploadSection.style.borderColor = '#6c5ce7';
+                    uploadSection.style.backgroundColor = 'rgba(108, 92, 231, 0.05)';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+                uploadSection.style.borderColor = '#e9ecef';
+                uploadSection.style.backgroundColor = '#fafafa';
+            }
+        });
+
         // Form validation and enhancement
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             const password = document.querySelector('input[name="password"]').value;

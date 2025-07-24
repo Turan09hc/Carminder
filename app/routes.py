@@ -1,11 +1,22 @@
 from flask import Blueprint, request, render_template, redirect, url_for, flash, session, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from app import mysql
-from .models.oil_calculator import OilChangeEstimator
+from .models.oil_calculator import MaintenanceEstimator, TireChangeEstimator, OilChangeEstimator
 from datetime import date, datetime, timedelta
 import functools
+import os
 
 main = Blueprint('main', __name__)
+
+# Configuration for file uploads
+UPLOAD_FOLDER = 'app/static/uploads/logos'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'svg'}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+def allowed_file(filename):
+    """Check if file extension is allowed"""
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def login_required(f):
     """Decorator to require login for routes"""
@@ -24,7 +35,7 @@ def get_current_user():
     
     cursor = mysql.connection.cursor()
     cursor.execute("""
-        SELECT u.*, c.company_name 
+        SELECT u.*, c.company_name, c.logo_filename 
         FROM users u 
         JOIN companies c ON u.company_id = c.id 
         WHERE u.id = %s AND u.is_active = TRUE
@@ -32,6 +43,14 @@ def get_current_user():
     user = cursor.fetchone()
     cursor.close()
     return user
+
+def determine_vehicle_type(car_model_info):
+    """Determine vehicle type from car model information"""
+    if not car_model_info:
+        return 'gasoline'
+    
+    fuel_type = car_model_info.get('fuel_type', 'gasoline').lower()
+    return fuel_type
 
 @main.route('/')
 def home():
@@ -42,7 +61,7 @@ def home():
 
 @main.route('/register', methods=['GET', 'POST'])
 def register():
-    """Company and admin user registration"""
+    """Company and admin user registration with logo upload"""
     if request.method == 'POST':
         try:
             # Get form data
@@ -71,6 +90,23 @@ def register():
                 flash('Passwords do not match!', 'error')
                 return render_template('register.html')
             
+            # Handle logo upload
+            logo_filename = None
+            if 'logo' in request.files:
+                file = request.files['logo']
+                if file and file.filename and allowed_file(file.filename):
+                    # Create upload directory if it doesn't exist
+                    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+                    
+                    # Generate secure filename
+                    original_filename = secure_filename(file.filename)
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    logo_filename = f"{timestamp}_{original_filename}"
+                    
+                    # Save file
+                    file_path = os.path.join(UPLOAD_FOLDER, logo_filename)
+                    file.save(file_path)
+            
             cursor = mysql.connection.cursor()
             
             # Check if email already exists
@@ -80,16 +116,18 @@ def register():
                 cursor.close()
                 return render_template('register.html')
             
-            # Create company
+            # Create company with logo
             cursor.execute("""
-                INSERT INTO companies (company_name, owner_name, email, phone, country, language, business_size, primary_interest)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (business_name, owner_name, email, phone, country, language, business_size, primary_interest))
+                INSERT INTO companies (company_name, owner_name, email, phone, country, language, 
+                                     business_size, primary_interest, logo_filename)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (business_name, owner_name, email, phone, country, language, 
+                  business_size, primary_interest, logo_filename))
             
             company_id = cursor.lastrowid
             
-            # Create admin user with compatible password hashing
-            username = email.split('@')[0]  # Use email prefix as username
+            # Create admin user
+            username = email.split('@')[0]
             password_hash = generate_password_hash(password, method='pbkdf2:sha256')
             
             cursor.execute("""
@@ -125,9 +163,8 @@ def login():
             
             cursor = mysql.connection.cursor()
             
-            # Check by email or username
             cursor.execute("""
-                SELECT u.*, c.company_name 
+                SELECT u.*, c.company_name, c.logo_filename 
                 FROM users u 
                 JOIN companies c ON u.company_id = c.id 
                 WHERE (u.email = %s OR u.username = %s) AND u.is_active = TRUE AND c.is_active = TRUE
@@ -143,6 +180,7 @@ def login():
                 session['full_name'] = user['full_name']
                 session['company_name'] = user['company_name']
                 session['role'] = user['role']
+                session['logo_filename'] = user['logo_filename']
                 
                 # Update last login
                 cursor.execute("UPDATE users SET last_login = NOW() WHERE id = %s", (user['id'],))
@@ -170,12 +208,12 @@ def logout():
 @main.route('/admin')
 @login_required
 def admin_dashboard():
-    """Your existing dashboard logic with company isolation"""
+    """Enhanced dashboard with electric car and tire tracking support"""
     cursor = mysql.connection.cursor()
     
-    # Get vehicles for current company only (enhanced your existing query)
+    # Get vehicles with car model information
     cursor.execute("""
-        SELECT c.*, cm.brand, cm.model as model_name, cm.engine_size 
+        SELECT c.*, cm.brand, cm.model as model_name, cm.engine_size, cm.fuel_type 
         FROM cars c 
         LEFT JOIN car_models cm ON c.car_model_id = cm.id 
         WHERE c.company_id = %s AND c.is_active = TRUE 
@@ -186,10 +224,14 @@ def admin_dashboard():
     vehicles = []
     critical_count = 0
     good_count = 0
+    tire_critical_count = 0
     
     for car in cars:
-        # Your existing oil calculation logic (unchanged)
-        distance_since_oil = car['mileage'] - car['last_oil_change_km']
+        # Determine vehicle type
+        vehicle_type = determine_vehicle_type(car)
+        
+        # Calculate maintenance needs (oil/battery service)
+        distance_since_service = car['mileage'] - car['last_oil_change_km']
         
         today = date.today()
         last_change_date = car['last_oil_change_date']
@@ -198,23 +240,59 @@ def admin_dashboard():
         
         months_since = (today.year - last_change_date.year) * 12 + (today.month - last_change_date.month)
         
-        try:
-            gas_type = int(car['gas_type']) if str(car['gas_type']).isdigit() else 95
-        except (ValueError, TypeError):
-            gas_type = 95
-            
-        estimator = OilChangeEstimator(
-            distance_km=distance_since_oil,
-            gas_type=gas_type,
+        # Determine fuel type for estimator
+        if vehicle_type == 'electric':
+            fuel_type = 'electric'
+        elif vehicle_type == 'diesel':
+            fuel_type = 'diesel'
+        elif vehicle_type == 'hybrid':
+            fuel_type = 'hybrid'
+        else:
+            try:
+                fuel_type = int(car['gas_type']) if str(car['gas_type']).isdigit() else 95
+            except (ValueError, TypeError):
+                fuel_type = 95
+        
+        # Calculate maintenance status
+        estimator = MaintenanceEstimator(
+            distance_km=distance_since_service,
+            fuel_type=fuel_type,
             months_since_last=months_since,
-            oil_brand=car['oil_type'] or 'standard'
+            oil_brand=car['oil_type'] or 'standard',
+            vehicle_type=vehicle_type
         )
         
-        oil_status = estimator.calculate_oil_change_need()
+        maintenance_status = estimator.calculate_maintenance_need()
         
-        if 'needed' in oil_status.lower() or 'now' in oil_status.lower():
+        # Calculate tire status
+        tire_distance = car['mileage'] - (car['last_tire_change_km'] or 0)
+        tire_last_change = car['last_tire_change_date']
+        tire_months = 0
+        
+        if tire_last_change:
+            if isinstance(tire_last_change, str):
+                tire_last_change = datetime.strptime(tire_last_change, '%Y-%m-%d').date()
+            tire_months = (today.year - tire_last_change.year) * 12 + (today.month - tire_last_change.month)
+        else:
+            tire_months = 48  # Assume old tires if no data
+        
+        tire_estimator = TireChangeEstimator(
+            distance_km=tire_distance,
+            months_since_last=tire_months,
+            tire_brand=car['tire_brand'] or 'standard'
+        )
+        
+        tire_status = tire_estimator.calculate_tire_change_need()
+        
+        # Determine overall status
+        maintenance_critical = 'needed' in maintenance_status.lower() or 'now' in maintenance_status.lower()
+        tire_critical = 'needed' in tire_status.lower() or 'now' in tire_status.lower()
+        
+        if maintenance_critical or tire_critical:
             status = 'critical'
             critical_count += 1
+            if tire_critical:
+                tire_critical_count += 1
         else:
             status = 'good'
             good_count += 1
@@ -222,11 +300,15 @@ def admin_dashboard():
         # Enhanced car model display
         if car['brand'] and car['model_name']:
             car_model_display = f"{car['brand']} {car['model_name']}"
-            if car['engine_size']:
+            if car['engine_size'] and car['engine_size'] != '0.0L':
                 car_model_display += f" ({car['engine_size']})"
+            if vehicle_type == 'electric':
+                car_model_display += " ⚡"
+            elif vehicle_type == 'hybrid':
+                car_model_display += " 🔋"
         else:
             car_model_display = car['custom_model'] or 'Unknown Model'
-            
+        
         vehicles.append({
             'id': car['id'],
             'plate_number': car['plate_number'],
@@ -236,12 +318,18 @@ def admin_dashboard():
             'mileage': car['mileage'],
             'gas_type': car['gas_type'],
             'oil_type': car['oil_type'],
+            'vehicle_type': vehicle_type,
             'status': status,
-            'oil_status': oil_status,
-            'distance_since_oil': distance_since_oil,
-            'months_since_oil': months_since,
+            'maintenance_status': maintenance_status,
+            'tire_status': tire_status,
+            'distance_since_service': distance_since_service,
+            'months_since_service': months_since,
+            'tire_distance': tire_distance,
+            'tire_months': tire_months,
             'last_oil_change_km': car['last_oil_change_km'],
-            'last_oil_change_date': car['last_oil_change_date']
+            'last_oil_change_date': car['last_oil_change_date'],
+            'last_tire_change_km': car['last_tire_change_km'],
+            'last_tire_change_date': car['last_tire_change_date']
         })
     
     cursor.close()
@@ -250,6 +338,7 @@ def admin_dashboard():
                          total_vehicles=len(vehicles),
                          critical_count=critical_count,
                          good_count=good_count,
+                         tire_critical_count=tire_critical_count,
                          user=get_current_user())
 
 @main.route('/api/car_models')
@@ -273,12 +362,25 @@ def get_car_models():
             brand = model['brand']
             if brand not in brands:
                 brands[brand] = []
+            
+            display_name = model['model']
+            if model['engine_size'] and model['engine_size'] != '0.0L':
+                display_name += f" ({model['engine_size']})"
+            
+            # Add fuel type indicator
+            if model['fuel_type'] == 'electric':
+                display_name += " ⚡"
+            elif model['fuel_type'] == 'hybrid':
+                display_name += " 🔋"
+            elif model['fuel_type'] == 'diesel':
+                display_name += " 🛢️"
+            
             brands[brand].append({
                 'id': model['id'],
                 'model': model['model'],
                 'engine_size': model['engine_size'],
                 'fuel_type': model['fuel_type'],
-                'display': f"{model['model']} ({model['engine_size']})" if model['engine_size'] else model['model']
+                'display': display_name
             })
         
         return jsonify(brands)
@@ -288,7 +390,7 @@ def get_car_models():
 @main.route('/admin/add_vehicle', methods=['POST'])
 @login_required
 def add_vehicle():
-    """Enhanced add vehicle with car model selection"""
+    """Enhanced add vehicle with electric car and tire tracking support"""
     try:
         # Get form data
         plate_number = request.form['plate_number'].upper().strip()
@@ -302,6 +404,11 @@ def add_vehicle():
         oil_type = request.form.get('oil_type', 'standard')
         last_oil_change_date = request.form['last_oil_change_date']
         
+        # Tire tracking fields
+        last_tire_change_km = int(request.form.get('last_tire_change_km', 0))
+        last_tire_change_date = request.form.get('last_tire_change_date')
+        tire_brand = request.form.get('tire_brand', 'standard')
+        
         # Validate car model selection
         if not car_model_id and not custom_model:
             flash('Please select a car model or enter a custom model!', 'error')
@@ -309,9 +416,13 @@ def add_vehicle():
         
         car_model_id = int(car_model_id) if car_model_id else None
         
-        # Your existing validation logic
+        # Validate distances
         if last_oil_change_km > mileage:
-            flash('Last oil change distance cannot be greater than current mileage!', 'error')
+            flash('Last service distance cannot be greater than current mileage!', 'error')
+            return redirect(url_for('main.admin_dashboard'))
+        
+        if last_tire_change_km > mileage:
+            flash('Last tire change distance cannot be greater than current mileage!', 'error')
             return redirect(url_for('main.admin_dashboard'))
         
         cursor = mysql.connection.cursor()
@@ -326,34 +437,61 @@ def add_vehicle():
             cursor.close()
             return redirect(url_for('main.admin_dashboard'))
         
-        # Enhanced insert with company isolation
+        # Get vehicle type for proper messaging
+        vehicle_type = 'gasoline'
+        if car_model_id:
+            cursor.execute("SELECT fuel_type FROM car_models WHERE id = %s", (car_model_id,))
+            model_info = cursor.fetchone()
+            if model_info:
+                vehicle_type = model_info['fuel_type']
+        
+        # Insert vehicle with tire tracking
         cursor.execute("""
             INSERT INTO cars (company_id, plate_number, car_model_id, custom_model, owner, tel_no, mileage,
-                            production_date, gas_type, oil_type, last_oil_change_km, last_oil_change_date, created_by)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            production_date, gas_type, oil_type, last_oil_change_km, last_oil_change_date, 
+                            last_tire_change_km, last_tire_change_date, tire_brand, created_by)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (session['company_id'], plate_number, car_model_id, custom_model, owner_name, owner_phone, mileage,
-              date.today(), gas_type, oil_type, last_oil_change_km, last_oil_change_date, session['user_id']))
+              date.today(), gas_type, oil_type, last_oil_change_km, last_oil_change_date, 
+              last_tire_change_km, last_tire_change_date, tire_brand, session['user_id']))
         
         mysql.connection.commit()
         cursor.close()
         
-        # Your existing oil status calculation (unchanged)
-        distance_since_oil = mileage - last_oil_change_km
+        # Calculate status for success message
+        distance_since_service = mileage - last_oil_change_km
         last_change_date = datetime.strptime(last_oil_change_date, '%Y-%m-%d').date()
         months_since = (date.today().year - last_change_date.year) * 12 + (date.today().month - last_change_date.month)
         
-        try:
-            gas_type_int = int(gas_type) if str(gas_type).isdigit() else 95
-        except:
-            gas_type_int = 95
-            
-        estimator = OilChangeEstimator(distance_since_oil, gas_type_int, months_since, oil_type)
-        oil_status = estimator.calculate_oil_change_need()
-        
-        if 'needed' in oil_status.lower():
-            flash(f'Vehicle {plate_number} added successfully! ⚠️ Oil change needed!', 'warning')
+        # Determine fuel type for estimator
+        if vehicle_type == 'electric':
+            fuel_type = 'electric'
+        elif vehicle_type == 'diesel':
+            fuel_type = 'diesel'
+        elif vehicle_type == 'hybrid':
+            fuel_type = 'hybrid'
         else:
-            flash(f'Vehicle {plate_number} added successfully! ✅ Oil status: Good', 'success')
+            try:
+                fuel_type = int(gas_type) if str(gas_type).isdigit() else 95
+            except:
+                fuel_type = 95
+        
+        estimator = MaintenanceEstimator(
+            distance_km=distance_since_service,
+            fuel_type=fuel_type,
+            months_since_last=months_since,
+            oil_brand=oil_type,
+            vehicle_type=vehicle_type
+        )
+        maintenance_status = estimator.calculate_maintenance_need()
+        
+        # Success message based on vehicle type
+        service_type = "Battery/brake service" if vehicle_type == 'electric' else "Oil change"
+        
+        if 'needed' in maintenance_status.lower():
+            flash(f'Vehicle {plate_number} added successfully! ⚠️ {service_type} needed!', 'warning')
+        else:
+            flash(f'Vehicle {plate_number} added successfully! ✅ Maintenance status: Good', 'success')
         
     except ValueError as e:
         flash('Invalid input values. Please check your entries.', 'error')
@@ -365,14 +503,18 @@ def add_vehicle():
 @main.route('/admin/service/<int:vehicle_id>', methods=['POST'])
 @login_required
 def service_vehicle(vehicle_id):
-    """Your existing service logic with company isolation"""
+    """Enhanced service with support for oil change and tire change"""
     try:
+        service_type = request.form.get('service_type', 'oil_change')
+        
         cursor = mysql.connection.cursor()
         
-        # Enhanced to ensure vehicle belongs to current company
+        # Get vehicle info with model details
         cursor.execute("""
-            SELECT plate_number, mileage FROM cars 
-            WHERE id = %s AND company_id = %s AND is_active = TRUE
+            SELECT c.*, cm.fuel_type 
+            FROM cars c 
+            LEFT JOIN car_models cm ON c.car_model_id = cm.id 
+            WHERE c.id = %s AND c.company_id = %s AND c.is_active = TRUE
         """, (vehicle_id, session['company_id']))
         car = cursor.fetchone()
         
@@ -380,24 +522,41 @@ def service_vehicle(vehicle_id):
             flash('Vehicle not found or access denied!', 'error')
             return redirect(url_for('main.admin_dashboard'))
         
-        # Your existing service logic
-        cursor.execute("""
-            UPDATE cars 
-            SET last_oil_change_km = %s, last_oil_change_date = %s 
-            WHERE id = %s AND company_id = %s
-        """, (car['mileage'], date.today(), vehicle_id, session['company_id']))
+        vehicle_type = determine_vehicle_type(car)
         
-        # Enhanced maintenance history with company isolation
+        if service_type == 'oil_change':
+            # Update maintenance service
+            cursor.execute("""
+                UPDATE cars 
+                SET last_oil_change_km = %s, last_oil_change_date = %s 
+                WHERE id = %s AND company_id = %s
+            """, (car['mileage'], date.today(), vehicle_id, session['company_id']))
+            
+            service_name = "Battery/brake service" if vehicle_type == 'electric' else "Oil change"
+            maintenance_type = 'battery_service' if vehicle_type == 'electric' else 'oil_change'
+            
+        elif service_type == 'tire_change':
+            # Update tire change
+            cursor.execute("""
+                UPDATE cars 
+                SET last_tire_change_km = %s, last_tire_change_date = %s 
+                WHERE id = %s AND company_id = %s
+            """, (car['mileage'], date.today(), vehicle_id, session['company_id']))
+            
+            service_name = "Tire change"
+            maintenance_type = 'tire_change'
+        
+        # Add to maintenance history
         cursor.execute("""
             INSERT INTO maintenance_history (car_id, company_id, maintenance_type, mileage_at_service, service_date, notes, performed_by)
-            VALUES (%s, %s, 'oil_change', %s, %s, %s, %s)
-        """, (vehicle_id, session['company_id'], car['mileage'], date.today(), 
-              f'Oil change completed by {session["full_name"]}', session['user_id']))
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (vehicle_id, session['company_id'], maintenance_type, car['mileage'], date.today(), 
+              f'{service_name} completed by {session["full_name"]}', session['user_id']))
         
         mysql.connection.commit()
         cursor.close()
         
-        flash(f'Service completed for vehicle {car["plate_number"]}! Oil change recorded.', 'success')
+        flash(f'{service_name} completed for vehicle {car["plate_number"]}!', 'success')
         
     except Exception as e:
         flash(f'Error updating service: {str(e)}', 'error')
@@ -407,11 +566,10 @@ def service_vehicle(vehicle_id):
 @main.route('/admin/delete/<int:vehicle_id>', methods=['POST'])
 @login_required
 def delete_vehicle(vehicle_id):
-    """Your existing delete logic with company isolation"""
+    """Delete vehicle with company isolation"""
     try:
         cursor = mysql.connection.cursor()
         
-        # Enhanced to ensure vehicle belongs to current company
         cursor.execute("""
             SELECT plate_number FROM cars 
             WHERE id = %s AND company_id = %s AND is_active = TRUE
@@ -435,5 +593,63 @@ def delete_vehicle(vehicle_id):
         
     except Exception as e:
         flash(f'Error removing vehicle: {str(e)}', 'error')
+    
+    return redirect(url_for('main.admin_dashboard'))
+
+@main.route('/admin/upload_logo', methods=['POST'])
+@login_required
+def upload_logo():
+    """Upload company logo"""
+    try:
+        if 'logo' not in request.files:
+            flash('No logo file selected!', 'error')
+            return redirect(url_for('main.admin_dashboard'))
+        
+        file = request.files['logo']
+        if file.filename == '':
+            flash('No logo file selected!', 'error')
+            return redirect(url_for('main.admin_dashboard'))
+        
+        if file and allowed_file(file.filename):
+            # Create upload directory if it doesn't exist
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            
+            # Generate secure filename
+            original_filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            logo_filename = f"{timestamp}_{original_filename}"
+            
+            # Check file size
+            file.seek(0, os.SEEK_END)
+            file_size = file.tell()
+            file.seek(0)
+            
+            if file_size > MAX_FILE_SIZE:
+                flash('Logo file too large! Maximum size is 5MB.', 'error')
+                return redirect(url_for('main.admin_dashboard'))
+            
+            # Save file
+            file_path = os.path.join(UPLOAD_FOLDER, logo_filename)
+            file.save(file_path)
+            
+            # Update database
+            cursor = mysql.connection.cursor()
+            cursor.execute("""
+                UPDATE companies 
+                SET logo_filename = %s 
+                WHERE id = %s
+            """, (logo_filename, session['company_id']))
+            mysql.connection.commit()
+            cursor.close()
+            
+            # Update session
+            session['logo_filename'] = logo_filename
+            
+            flash('Company logo uploaded successfully!', 'success')
+        else:
+            flash('Invalid file type! Please upload PNG, JPG, JPEG, GIF, or SVG files only.', 'error')
+        
+    except Exception as e:
+        flash(f'Error uploading logo: {str(e)}', 'error')
     
     return redirect(url_for('main.admin_dashboard'))

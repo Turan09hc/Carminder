@@ -17,6 +17,8 @@
             --sap-green: #30914c;
             --sap-orange: #ff6600;
             --sap-red: #e53935;
+            --electric-blue: #00d4ff;
+            --tire-orange: #ff8c00;
         }
 
         body {
@@ -37,6 +39,25 @@
             margin: 0;
             font-size: 18px;
             font-weight: 600;
+        }
+
+        .company-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.3);
+            margin-right: 12px;
+        }
+
+        .user-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dropdown-toggle::after {
+            margin-left: 8px;
         }
 
         .breadcrumb-section {
@@ -117,6 +138,8 @@
         .tile-icon.green { background: var(--sap-green); }
         .tile-icon.orange { background: var(--sap-orange); }
         .tile-icon.red { background: var(--sap-red); }
+        .tile-icon.electric { background: var(--electric-blue); }
+        .tile-icon.tire { background: var(--tire-orange); }
 
         .tile-content h3 {
             font-size: 14px;
@@ -258,6 +281,7 @@
             font-size: 10px;
             font-weight: 600;
             text-transform: uppercase;
+            margin-right: 4px;
         }
 
         .status-good {
@@ -268,6 +292,35 @@
         .status-critical {
             background: #ffebee;
             color: var(--sap-red);
+        }
+
+        .status-tire-critical {
+            background: #fff3e0;
+            color: var(--tire-orange);
+        }
+
+        .vehicle-type-badge {
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: 4px;
+        }
+
+        .vehicle-electric {
+            background: rgba(0, 212, 255, 0.1);
+            color: var(--electric-blue);
+        }
+
+        .vehicle-hybrid {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .vehicle-diesel {
+            background: rgba(96, 125, 139, 0.1);
+            color: #607d8b;
         }
 
         .btn-action {
@@ -288,6 +341,12 @@
         .btn-action:hover {
             transform: translateY(-1px);
             box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .btn-tire {
+            background: var(--tire-orange);
+            color: white;
+            border-color: var(--tire-orange);
         }
 
         .modal-header {
@@ -327,6 +386,28 @@
             opacity: 0.5;
         }
 
+        .logo-upload-section {
+            border: 2px dashed var(--sap-border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: #fafafa;
+        }
+
+        .current-logo {
+            max-width: 100px;
+            max-height: 80px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .maintenance-details {
+            font-size: 11px;
+            color: var(--sap-gray);
+            margin-top: 4px;
+        }
+
         @media (max-width: 768px) {
             .tiles-grid {
                 grid-template-columns: 1fr;
@@ -350,10 +431,27 @@
                     <i class="fas fa-car me-2"></i>
                     CarMinder Fleet Management
                 </h1>
-                <div>
-                    <span class="me-3">
-                        <i class="fas fa-user-circle me-1"></i>Fleet Manager
-                    </span>
+                <div class="user-section">
+                    {% if user and user.logo_filename %}
+                        <img src="{{ url_for('static', filename='uploads/logos/' + user.logo_filename) }}" 
+                             alt="Company Logo" class="company-logo">
+                    {% endif %}
+                    <div class="dropdown">
+                        <button class="btn btn-link text-white dropdown-toggle" type="button" 
+                                data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user-circle me-1"></i>
+                            {{ user.full_name if user else 'Fleet Manager' }}
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#logoModal">
+                                <i class="fas fa-image me-2"></i>Company Logo
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('main.logout') }}">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -378,6 +476,9 @@
             <h2>
                 <i class="fas fa-tachometer-alt text-primary me-2"></i>
                 Fleet Management Dashboard
+                {% if user %}
+                    <small class="text-muted">- {{ user.company_name }}</small>
+                {% endif %}
             </h2>
         </div>
 
@@ -434,6 +535,25 @@
                     <div>
                         <div class="tile-number">{{ critical_count }}</div>
                         <div class="tile-label">Critical</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tire Service Required Tile -->
+            <div class="sap-tile">
+                <div class="tile-header">
+                    <div class="tile-icon tire">
+                        <i class="fas fa-circle"></i>
+                    </div>
+                    <div class="tile-content">
+                        <h3>Tire Service</h3>
+                        <p class="tile-subtitle">Vehicles needing tire change</p>
+                    </div>
+                </div>
+                <div class="tile-footer">
+                    <div>
+                        <div class="tile-number">{{ tire_critical_count }}</div>
+                        <div class="tile-label">Tires</div>
                     </div>
                 </div>
             </div>
@@ -502,6 +622,13 @@
                     <option value="good">Up to Date</option>
                     <option value="critical">Critical</option>
                 </select>
+                <select class="filter-select" id="vehicleTypeFilter">
+                    <option value="">All Types</option>
+                    <option value="gasoline">Gasoline</option>
+                    <option value="diesel">Diesel</option>
+                    <option value="hybrid">Hybrid</option>
+                    <option value="electric">Electric</option>
+                </select>
                 <div class="ms-auto">
                     <button class="btn btn-outline-primary btn-sm" onclick="exportData()">
                         <i class="fas fa-download"></i> Export
@@ -519,7 +646,7 @@
                             <th>Owner</th>
                             <th>Phone</th>
                             <th>Mileage</th>
-                            <th>Gas Type</th>
+                            <th>Type</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -527,27 +654,86 @@
                     <tbody>
                         {% if vehicles %}
                             {% for vehicle in vehicles %}
-                            <tr data-status="{{ vehicle.status }}">
+                            <tr data-status="{{ vehicle.status }}" data-vehicle-type="{{ vehicle.vehicle_type }}">
                                 <td><strong>{{ vehicle.plate_number }}</strong></td>
-                                <td>{{ vehicle.car_model }}</td>
+                                <td>
+                                    {{ vehicle.car_model }}
+                                    {% if vehicle.vehicle_type == 'electric' %}
+                                        <span class="vehicle-type-badge vehicle-electric">⚡ Electric</span>
+                                    {% elif vehicle.vehicle_type == 'hybrid' %}
+                                        <span class="vehicle-type-badge vehicle-hybrid">🔋 Hybrid</span>
+                                    {% elif vehicle.vehicle_type == 'diesel' %}
+                                        <span class="vehicle-type-badge vehicle-diesel">🛢️ Diesel</span>
+                                    {% endif %}
+                                </td>
                                 <td>{{ vehicle.owner_name }}</td>
                                 <td>{{ vehicle.owner_phone }}</td>
                                 <td>{{ "{:,}".format(vehicle.mileage) }} km</td>
-                                <td><span class="badge bg-info text-white">{{ vehicle.gas_type }}</span></td>
                                 <td>
-                                    <span class="status-badge {% if vehicle.status == 'critical' %}status-critical{% else %}status-good{% endif %}">
-                                        {{ vehicle.status|title }}
-                                    </span>
+                                    {% if vehicle.vehicle_type != 'electric' %}
+                                        <span class="badge bg-info text-white">{{ vehicle.gas_type }}</span>
+                                    {% else %}
+                                        <span class="badge bg-primary text-white">Electric</span>
+                                    {% endif %}
                                 </td>
                                 <td>
+                                    <div>
+                                        <span class="status-badge {% if vehicle.status == 'critical' %}status-critical{% else %}status-good{% endif %}">
+                                            {{ vehicle.status|title }}
+                                        </span>
+                                        {% if 'tire' in vehicle.tire_status.lower() and 'needed' in vehicle.tire_status.lower() %}
+                                            <span class="status-badge status-tire-critical">
+                                                Tire
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="maintenance-details">
+                                        <small>{{ vehicle.maintenance_status }}</small>
+                                        {% if vehicle.tire_status and 'good' not in vehicle.tire_status.lower() %}
+                                            <br><small class="text-warning">{{ vehicle.tire_status }}</small>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <!-- Maintenance Service Button -->
                                     <form method="POST" action="{{ url_for('main.service_vehicle', vehicle_id=vehicle.id) }}" 
                                           style="display: inline;">
+                                        <input type="hidden" name="service_type" value="oil_change">
                                         <button type="submit" class="btn btn-success btn-action" 
-                                                title="Mark as Serviced"
-                                                onclick="return confirm('Mark this vehicle as serviced?')">
-                                            <i class="fas fa-wrench"></i>
+                                                title="{% if vehicle.vehicle_type == 'electric' %}Mark Battery/Brake Service Complete{% else %}Mark Oil Change Complete{% endif %}"
+                                                data-service-type="{% if vehicle.vehicle_type == 'electric' %}battery/brake service{% else %}oil change{% endif %}"
+                                                onclick="return confirmService(this)">
+                                            {% if vehicle.vehicle_type == 'electric' %}
+                                                <i class="fas fa-battery-three-quarters"></i>
+                                            {% else %}
+                                                <i class="fas fa-wrench"></i>
+                                            {% endif %}
                                         </button>
                                     </form>
+                                    
+                                    <!-- Tire Change Button -->
+                                    <form method="POST" action="{{ url_for('main.service_vehicle', vehicle_id=vehicle.id) }}" 
+                                          style="display: inline;">
+                                        <input type="hidden" name="service_type" value="tire_change">
+                                        <button type="submit" class="btn btn-tire btn-action" 
+                                                title="Mark Tire Change Complete"
+                                                onclick="return confirm('Mark tire change as completed?')">
+                                            <i class="fas fa-circle"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Tire Change Button -->
+                                    <form method="POST" action="{{ url_for('main.service_vehicle', vehicle_id=vehicle.id) }}" 
+                                          style="display: inline;">
+                                        <input type="hidden" name="service_type" value="tire_change">
+                                        <button type="submit" class="btn btn-tire btn-action" 
+                                                title="Mark Tire Change Complete"
+                                                onclick="return confirm('Mark tire change as completed?')">
+                                            <i class="fas fa-circle"></i>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Delete Button -->
                                     <form method="POST" action="{{ url_for('main.delete_vehicle', vehicle_id=vehicle.id) }}" 
                                           style="display: inline;">
                                         <button type="submit" class="btn btn-danger btn-action" 
@@ -598,18 +784,19 @@
                                        placeholder="e.g., 10-AA-123" required>
                             </div>
                             <div class="col-md-6 mb-3">
-    <label class="form-label">Car Model</label>
-    <select class="form-select" name="car_model_id" id="carModelSelect" required>
-        <option value="">Loading car models...</option>
-    </select>
-    <div class="mt-2">
-        <small class="text-muted">Can't find your model?</small>
-        <button type="button" class="btn btn-link btn-sm p-0" onclick="toggleCustomModel()">
-            Enter custom model
-        </button>
-    </div>
-    <input type="text" class="form-control mt-2 d-none" name="custom_model" 
-           id="customModelInput" placeholder="Enter custom car model">
+                                <label class="form-label">Car Model</label>
+                                <select class="form-select" name="car_model_id" id="carModelSelect" required>
+                                    <option value="">Loading car models...</option>
+                                </select>
+                                <div class="mt-2">
+                                    <small class="text-muted">Can't find your model?</small>
+                                    <button type="button" class="btn btn-link btn-sm p-0" onclick="toggleCustomModel()">
+                                        Enter custom model
+                                    </button>
+                                </div>
+                                <input type="text" class="form-control mt-2 d-none" name="custom_model" 
+                                       id="customModelInput" placeholder="Enter custom car model">
+                            </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -630,24 +817,26 @@
                                        placeholder="45000" min="0" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Last Oil Change Distance (km)</label>
+                                <label class="form-label">Last Service Distance (km)</label>
                                 <input type="number" class="form-control" name="last_oil_change_km" 
                                        placeholder="40000" min="0" required>
-                                <small class="text-muted">When was the last oil change done (in km)</small>
+                                <small class="text-muted">Last oil change/battery service (in km)</small>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Gas Type</label>
-                                <select class="form-select" name="gas_type" required>
-                                    <option value="">Select Gas Type</option>
+                                <label class="form-label">Fuel Type</label>
+                                <select class="form-select" name="gas_type" required id="fuelTypeSelect">
+                                    <option value="">Select Fuel Type</option>
                                     <option value="92">92 Octane</option>
                                     <option value="95">95 Octane</option>
                                     <option value="98">98 Octane</option>
                                     <option value="diesel">Diesel</option>
+                                    <option value="electric">Electric</option>
+                                    <option value="hybrid">Hybrid</option>
                                 </select>
                             </div>
-                            <div class="col-md-4 mb-3">
+                            <div class="col-md-4 mb-3" id="oilTypeSection">
                                 <label class="form-label">Oil Type</label>
                                 <select class="form-select" name="oil_type" required>
                                     <option value="">Select Oil Type</option>
@@ -657,8 +846,35 @@
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label class="form-label">Last Oil Change Date</label>
+                                <label class="form-label">Last Service Date</label>
                                 <input type="date" class="form-control" name="last_oil_change_date" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Tire Tracking Section -->
+                        <hr class="my-4">
+                        <h6 class="mb-3"><i class="fas fa-circle me-2"></i>Tire Tracking</h6>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Last Tire Change (km)</label>
+                                <input type="number" class="form-control" name="last_tire_change_km" 
+                                       placeholder="20000" min="0" value="0">
+                                <small class="text-muted">0 if unknown</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Last Tire Change Date</label>
+                                <input type="date" class="form-control" name="last_tire_change_date">
+                                <small class="text-muted">Leave empty if unknown</small>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Tire Brand</label>
+                                <select class="form-select" name="tire_brand">
+                                    <option value="standard">Standard</option>
+                                    <option value="budget">Budget</option>
+                                    <option value="premium">Premium</option>
+                                    <option value="performance">Performance</option>
+                                    <option value="winter">Winter</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -670,6 +886,45 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Logo Modal -->
+    <div class="modal fade" id="logoModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-image me-2"></i>
+                        Company Logo
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="logo-upload-section">
+                        {% if user and user.logo_filename %}
+                            <img src="{{ url_for('static', filename='uploads/logos/' + user.logo_filename) }}" 
+                                 alt="Current Logo" class="current-logo">
+                            <p class="text-muted">Current company logo</p>
+                        {% else %}
+                            <i class="fas fa-image fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No logo uploaded yet</p>
+                        {% endif %}
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('main.upload_logo') }}" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Upload New Logo</label>
+                            <input type="file" class="form-control" name="logo" accept=".png,.jpg,.jpeg,.gif,.svg" required>
+                            <small class="text-muted">Supported formats: PNG, JPG, JPEG, GIF, SVG. Max size: 5MB</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-1"></i>
+                            Upload Logo
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -701,69 +956,128 @@
             });
         });
 
+        // Vehicle type filter
+        document.getElementById('vehicleTypeFilter').addEventListener('change', function() {
+            const filterValue = this.value;
+            const rows = document.querySelectorAll('#vehiclesTable tbody tr');
+            
+            rows.forEach(row => {
+                if (!filterValue || row.dataset.vehicleType === filterValue) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
         // Auto-uppercase plate number
         document.querySelector('input[name="plate_number"]').addEventListener('input', function() {
             this.value = this.value.toUpperCase();
+        });
+
+        // Handle fuel type change
+        document.getElementById('fuelTypeSelect').addEventListener('change', function() {
+            const oilSection = document.getElementById('oilTypeSection');
+            const oilSelect = document.querySelector('select[name="oil_type"]');
+            
+            if (this.value === 'electric') {
+                oilSection.style.display = 'none';
+                oilSelect.required = false;
+                oilSelect.value = 'standard';
+            } else {
+                oilSection.style.display = 'block';
+                oilSelect.required = true;
+            }
         });
 
         // Export function placeholder
         function exportData() {
             alert('Export functionality - ready for implementation');
         }
+
+        // Service confirmation function
+        function confirmService(button) {
+            const serviceType = button.getAttribute('data-service-type');
+            return confirm(`Mark ${serviceType} as completed?`);
+        }
+
         // Load car models when modal opens
-document.getElementById('addVehicleModal').addEventListener('show.bs.modal', function() {
-    loadCarModels();
-});
-
-// Load car models via AJAX
-function loadCarModels() {
-    const select = document.getElementById('carModelSelect');
-    
-    fetch('/api/car_models')
-        .then(response => response.json())
-        .then(data => {
-            select.innerHTML = '<option value="">Select a car model</option>';
-            
-            // Group models by brand
-            Object.keys(data).sort().forEach(brand => {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = brand;
-                
-                data[brand].forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model.id;
-                    option.textContent = model.display;
-                    option.dataset.fuelType = model.fuel_type;
-                    optgroup.appendChild(option);
-                });
-                
-                select.appendChild(optgroup);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading car models:', error);
-            select.innerHTML = '<option value="">Error loading models - use custom model</option>';
+        document.getElementById('addVehicleModal').addEventListener('show.bs.modal', function() {
+            loadCarModels();
         });
-}
 
-// Toggle custom model input
-function toggleCustomModel() {
-    const select = document.getElementById('carModelSelect');
-    const customInput = document.getElementById('customModelInput');
-    
-    if (customInput.classList.contains('d-none')) {
-        customInput.classList.remove('d-none');
-        customInput.required = true;
-        select.required = false;
-        select.value = '';
-        customInput.focus();
-    } else {
-        customInput.classList.add('d-none');
-        customInput.required = false;
-        select.required = true;
-        customInput.value = '';
-    }
-}
+        // Load car models via AJAX
+        function loadCarModels() {
+            const select = document.getElementById('carModelSelect');
+            
+            fetch('/api/car_models')
+                .then(response => response.json())
+                .then(data => {
+                    select.innerHTML = '<option value="">Select a car model</option>';
+                    
+                    // Group models by brand
+                    Object.keys(data).sort().forEach(brand => {
+                        const optgroup = document.createElement('optgroup');
+                        optgroup.label = brand;
+                        
+                        data[brand].forEach(model => {
+                            const option = document.createElement('option');
+                            option.value = model.id;
+                            option.textContent = model.display;
+                            option.dataset.fuelType = model.fuel_type;
+                            optgroup.appendChild(option);
+                        });
+                        
+                        select.appendChild(optgroup);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading car models:', error);
+                    select.innerHTML = '<option value="">Error loading models - use custom model</option>';
+                });
+        }
+
+        // Auto-set fuel type based on car model selection
+        document.getElementById('carModelSelect').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const fuelSelect = document.getElementById('fuelTypeSelect');
+            
+            if (selectedOption.dataset.fuelType) {
+                const fuelType = selectedOption.dataset.fuelType;
+                
+                if (fuelType === 'electric') {
+                    fuelSelect.value = 'electric';
+                } else if (fuelType === 'diesel') {
+                    fuelSelect.value = 'diesel';
+                } else if (fuelType === 'hybrid') {
+                    fuelSelect.value = 'hybrid';
+                } else {
+                    fuelSelect.value = '95'; // Default gasoline
+                }
+                
+                // Trigger change event
+                fuelSelect.dispatchEvent(new Event('change'));
+            }
+        });
+
+        // Toggle custom model input
+        function toggleCustomModel() {
+            const select = document.getElementById('carModelSelect');
+            const customInput = document.getElementById('customModelInput');
+            
+            if (customInput.classList.contains('d-none')) {
+                customInput.classList.remove('d-none');
+                customInput.required = true;
+                select.required = false;
+                select.value = '';
+                customInput.focus();
+            } else {
+                customInput.classList.add('d-none');
+                customInput.required = false;
+                select.required = true;
+                customInput.value = '';
+            }
+        }
     </script>
 </body>
 </html>

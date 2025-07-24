@@ -163,10 +163,6 @@ INSERT INTO car_models (brand, model, year_from, year_to, fuel_type, engine_size
 ('Mitsubishi', 'ASX', 2010, 2025, 'gasoline', '2.0L'),
 ('Mitsubishi', 'Lancer', 2000, 2010, 'gasoline', '2.0L'),
 
---Byd
-('Byd', 'Tang', 2020, 2025, 'electric', '0.0L'),
-('Byd', 'Song+', 2020, 2025, 'electric', '0.0L'),
-
 -- Create demo company and user for testing
 INSERT INTO companies (company_name, owner_name, email, phone, country, language, business_size, primary_interest) 
 VALUES ('Demo Auto Service', 'Demo Owner', 'demo@carminder.com', '+994501234567', 'Azerbaijan', 'English', '1-5 vehicles', 'Fleet Management');
@@ -174,3 +170,47 @@ VALUES ('Demo Auto Service', 'Demo Owner', 'demo@carminder.com', '+994501234567'
 -- Create demo admin user (password: admin123)
 INSERT INTO users (company_id, username, email, password_hash, full_name, role) 
 VALUES (1, 'admin', 'demo@carminder.com', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewdBdXIG/QHuCdve', 'Demo Owner', 'admin');
+
+-- Enhanced CarMinder Database Schema with Electric Car Support
+-- Add company logo support
+ALTER TABLE companies ADD COLUMN logo_url VARCHAR(255) NULL AFTER primary_interest;
+ALTER TABLE companies ADD COLUMN logo_filename VARCHAR(100) NULL AFTER logo_url;
+
+-- Add tire tracking to cars table
+ALTER TABLE cars ADD COLUMN last_tire_change_km INT DEFAULT 0 AFTER last_oil_change_date;
+ALTER TABLE cars ADD COLUMN last_tire_change_date DATE NULL AFTER last_tire_change_km;
+ALTER TABLE cars ADD COLUMN tire_brand VARCHAR(50) DEFAULT 'standard' AFTER last_tire_change_date;
+
+-- Update maintenance_history to support tire changes
+ALTER TABLE maintenance_history MODIFY COLUMN maintenance_type ENUM('oil_change', 'tire_change', 'filter_change', 'brake_service', 'inspection', 'battery_service', 'other') NOT NULL;
+
+-- Add more electric car models
+INSERT INTO car_models (brand, model, year_from, year_to, fuel_type, engine_size) VALUES
+-- Tesla
+('Tesla', 'Model 3', 2017, 2025, 'electric', '0.0L'),
+('Tesla', 'Model Y', 2020, 2025, 'electric', '0.0L'),
+('Tesla', 'Model S', 2012, 2025, 'electric', '0.0L'),
+('Tesla', 'Model X', 2015, 2025, 'electric', '0.0L'),
+
+-- More BYD models
+('BYD', 'Atto 3', 2022, 2025, 'electric', '0.0L'),
+('BYD', 'Seal', 2022, 2025, 'electric', '0.0L'),
+
+-- Other Electric Vehicles
+('Nissan', 'Leaf', 2018, 2025, 'electric', '0.0L'),
+('Chevrolet', 'Bolt', 2017, 2025, 'electric', '0.0L'),
+('BMW', 'i3', 2014, 2025, 'electric', '0.0L'),
+('BMW', 'iX3', 2020, 2025, 'electric', '0.0L'),
+('Audi', 'e-tron', 2019, 2025, 'electric', '0.0L'),
+('Mercedes-Benz', 'EQC', 2019, 2025, 'electric', '0.0L'),
+('Volkswagen', 'ID.4', 2020, 2025, 'electric', '0.0L'),
+('Hyundai', 'Kona Electric', 2018, 2025, 'electric', '0.0L'),
+('Kia', 'EV6', 2021, 2025, 'electric', '0.0L'),
+
+-- More Hybrid models
+('Toyota', 'Prius Prime', 2017, 2025, 'hybrid', '1.8L'),
+('Honda', 'Insight', 2019, 2025, 'hybrid', '1.5L'),
+('Lexus', 'RX Hybrid', 2016, 2025, 'hybrid', '3.5L');
+
+-- Update demo data
+UPDATE companies SET logo_filename = 'demo-logo.png' WHERE id = 1;
